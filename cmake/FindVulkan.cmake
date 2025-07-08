@@ -1,0 +1,11 @@
+Find_Package(Vulkan REQUIRED)
+
+if(Vulkan_FOUND)
+    message("Vulkan has been found in")
+    message(${Vulkan_INCLUDE_DIRS})
+    message(${Vulkan_LIBRARIES})
+    include_directories(${Vulkan_INCLUDE_DIRS})
+    link_directories(${Vulkan_LIBRARY})
+else()
+    message("Vulkan not found.Do you set your VulkanSdk PATH correctly?")
+endif()

@@ -1,0 +1,5 @@
+add_subdirectory(glfw)
+add_subdirectory(imgui)
+add_subdirectory(imGuizmo)
+add_subdirectory(glm)
+add_subdirectory(stb)

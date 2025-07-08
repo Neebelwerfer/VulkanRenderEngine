@@ -1,0 +1,9 @@
+﻿.vs
+out
+build
+*.ini
+bin
+CMakeFiles
+CMakeCache.txt
+build
+*.sln
