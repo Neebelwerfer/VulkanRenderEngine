@@ -28,10 +28,6 @@ void Application::Initialize()
 {
 }
 
-void Application::Render()
-{
-
-}
 
 void Application::run()
 {
@@ -44,7 +40,7 @@ void Application::run()
 		while (IsRunning())
 		{
 			std::chrono::duration<float> duration = std::chrono::steady_clock::now() - startTime;
-			//UpdateTime(duration.count());
+			UpdateTime(duration.count());
 
 			Update();
 
@@ -52,15 +48,20 @@ void Application::run()
 
 			// Swap buffers and poll events at the end of the frame
 			m_mainWindow.SwapBuffers();
+			glfwPollEvents();
 		}
 
 		Cleanup();
 	}
 }
 
+void Application::Render()
+{
+
+}
+
 void Application::Update()
 {
-	glfwPollEvents();
 }
 
 void Application::Cleanup()
@@ -70,6 +71,12 @@ void Application::Cleanup()
 		m_mainWindow.Close();
 
 	}
+}
+
+void Application::UpdateTime(float newCurrentTime)
+{
+	m_deltaTime = newCurrentTime - m_currentTime;
+	m_currentTime = newCurrentTime;
 }
 
 bool Application::IsRunning() const

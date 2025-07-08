@@ -6,10 +6,7 @@
 
 class Application {
 public:
-	// Construct the application specifying the dimensions of the window and its title
 	Application(int width, int height, const char* title);
-
-	// Destroy de application
 	virtual ~Application();
 
 	void run();
@@ -21,8 +18,16 @@ private:
 	void Render();
 		
 	void Cleanup();
-	
+
+	void UpdateTime(float newCurrentTime);
+
 protected:
+	// Get time in seconds from the start of the application
+	inline float GetCurrentTime() const { return m_currentTime; }
+
+	// Get time in seconds of the current frame
+	inline float GetDeltaTime() const { return m_deltaTime; }
+
 	bool IsRunning() const;
 
 	inline void Close() { Terminate(0); }
