@@ -22,8 +22,6 @@ endforeach()
 
 add_executable(Editor ${EDITOR_FILES})
 target_include_directories(Editor PUBLIC ${CMAKE_CURRENT_LIST_DIR}/Editor)
-target_link_libraries(Editor PUBLIC ${libraries})
-
 target_link_libraries(Editor PRIVATE ${libraries})
 # set_target_properties(Editor PROPERTIES FOLDER "Applications")
 set_app_output_dirs(Editor)
