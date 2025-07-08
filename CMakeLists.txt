@@ -10,7 +10,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(${PROJECT_SOURCE_DIR}/cmake/Config.cmake)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
 # -------------------------------------------------------
 # External dependencies
 # -------------------------------------------------------

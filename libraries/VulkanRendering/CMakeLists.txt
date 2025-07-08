@@ -11,7 +11,7 @@ set(RENDERER_FILES ${RENDERER_SOURCES} ${RENDERER_HEADERS})
 
 # Group files in IDE by folder structure
 foreach(file ${RENDERER_FILES})
-    file(RELATIVE_PATH rel_path "${CMAKE_CURRENT_LIST_DIR}" "${file}")
+    file(RELATIVE_PATH rel_path "${CMAKE_CURRENT_LIST_DIR}/Rendering" "${file}")
     get_filename_component(dir "${rel_path}" DIRECTORY)
     string(REPLACE "/" "\\" group "${dir}")  # For Visual Studio
     source_group("${group}" FILES "${file}")
