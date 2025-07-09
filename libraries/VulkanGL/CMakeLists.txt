@@ -18,14 +18,14 @@ foreach(file ${RENDERER_FILES})
 endforeach()
 
 # Create the engine library
-add_library(VulkanRendering STATIC ${RENDERER_FILES})
+add_library(VulkanGL STATIC ${RENDERER_FILES})
 
 # Expose headers to other targets
-target_include_directories(VulkanRendering PUBLIC
+target_include_directories(VulkanGL PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/Rendering
 )
 
 # Optional: If Engine depends on other libraries, link them here
-target_link_libraries(VulkanRendering PUBLIC glm glfw imgui Vulkan::Vulkan)
-set_target_properties(VulkanRendering PROPERTIES FOLDER "Libraries")
-set_lib_output_dirs(VulkanRendering)
+target_link_libraries(VulkanGL PUBLIC glm glfw imgui Vulkan::Vulkan)
+set_target_properties(VulkanGL PROPERTIES FOLDER "Libraries")
+set_lib_output_dirs(VulkanGL)

@@ -2,16 +2,15 @@
 #include <GLFW/glfw3.h>
 
 #include <vulkan/vulkan.h>>
-#include <Application/Application.h>
-
+#include "EditorApplication.h"
 int main()
 {
-    Application app(800, 600, "vulkan window");
+    EditorApplication app(800, 600);
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
     std::cout << extensionCount << " extensions supported\n";
 
-    app.run();
+    app.Run();
 
 
     glm::mat4 matrix{};

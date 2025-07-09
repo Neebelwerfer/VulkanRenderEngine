@@ -1,3 +1,3 @@
 # obtain the list of subdirectories
-add_subdirectory(VulkanRendering)
+add_subdirectory(VulkanGL)
 add_subdirectory(Engine)

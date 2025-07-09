@@ -17,6 +17,8 @@ public:
 
 	void SwapBuffers();
 
+	inline GLFWwindow* GetGLFWwindow() const { return m_window; }
+
 private:
 	// Pointer to a GLFW window object. Its lifetime should match the lifetime of this object
 	GLFWwindow* m_window;

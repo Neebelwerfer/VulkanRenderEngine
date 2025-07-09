@@ -29,7 +29,7 @@ void Application::Initialize()
 }
 
 
-void Application::run()
+void Application::Run()
 {
 	if (!m_exitCode)
 	{
@@ -69,7 +69,6 @@ void Application::Cleanup()
 	if (m_mainWindow.IsValid())
 	{
 		m_mainWindow.Close();
-
 	}
 }
 

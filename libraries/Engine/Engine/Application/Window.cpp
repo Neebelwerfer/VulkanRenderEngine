@@ -14,7 +14,6 @@ Window::~Window()
 	if (m_window)
 	{
 		glfwDestroyWindow(m_window);
-
 	}
 	glfwTerminate();
 }

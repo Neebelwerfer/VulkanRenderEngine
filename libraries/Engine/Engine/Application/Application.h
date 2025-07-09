@@ -9,19 +9,21 @@ public:
 	Application(int width, int height, const char* title);
 	virtual ~Application();
 
-	void run();
+	virtual void Run();
 
 private:
-	void Initialize();
-
-	void Update();
-	void Render();
-		
-	void Cleanup();
 
 	void UpdateTime(float newCurrentTime);
 
 protected:
+	virtual void Initialize();
+	virtual void Update();
+	virtual void Render();
+	virtual void Cleanup();
+
+	inline Window& GetMainWindow() { return m_mainWindow; }
+	inline const Window& GetMainWindow() const { return m_mainWindow; }
+
 	// Get time in seconds from the start of the application
 	inline float GetCurrentTime() const { return m_currentTime; }
 

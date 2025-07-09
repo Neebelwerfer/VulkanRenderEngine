@@ -1,10 +1,18 @@
-include_directories(include)
-include_directories(#${TARGET_NAME} PRIVATE
-        include
+file(GLOB IMGUI_SRC CONFIGURE_DEPENDS "src/*.cpp")
+
+add_library(imgui STATIC ${IMGUI_SRC})
+
+target_include_directories(imgui
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${EXTERNAL_LIBRARIES_SOURCE_PATH}/glad/include
         ${EXTERNAL_LIBRARIES_SOURCE_PATH}/glfw/include
-		)
-file(GLOB target_src "src/*.cpp" )
-add_library(imgui STATIC ${target_src})
-target_link_libraries(imgui PRIVATE glfw Vulkan::Vulkan)
+)
+
+target_link_libraries(imgui
+    PRIVATE
+        glfw
+        Vulkan::Vulkan
+)
+
 set_target_properties(imgui PROPERTIES FOLDER "ThirdParty")

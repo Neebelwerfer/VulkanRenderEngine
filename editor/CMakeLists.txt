@@ -1,5 +1,5 @@
 
-set(libraries Engine)
+set(libraries imgui Engine)
 
 # Collect all .h/.cpp from Editor root and subfolders
 file(GLOB_RECURSE EDITOR_HEADERS CONFIGURE_DEPENDS
