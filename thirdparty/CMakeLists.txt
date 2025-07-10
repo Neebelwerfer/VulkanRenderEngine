@@ -1,5 +1,6 @@
 add_subdirectory(glfw)
-add_subdirectory(imgui)
-add_subdirectory(imGuizmo)
 add_subdirectory(glm)
-add_subdirectory(stb)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/ImGui-wrapper.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/imGuizmo-wrapper.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/stb-wrapper.cmake)
