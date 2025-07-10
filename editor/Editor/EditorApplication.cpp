@@ -33,4 +33,7 @@ void EditorApplication::Cleanup()
 
 void EditorApplication::RenderGUI()
 {
+	//m_imgui.BeginFrame();
+
+	//m_imgui.EndFrame();
 }

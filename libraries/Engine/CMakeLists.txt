@@ -23,7 +23,7 @@ add_library(Engine STATIC ${ENGINE_FILES})
 
 # Expose headers to other targets
 target_include_directories(Engine PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/Engine
+    ${CMAKE_CURRENT_LIST_DIR}
 )
 
 target_link_libraries(Engine PUBLIC glm stb glfw imgui VulkanGL)
