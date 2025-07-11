@@ -1,8 +1,10 @@
 #include "EditorApplication.h"
+#include <iostream>
 #include <imgui.h>
+#include <vulkan/vulkan.h>>
 
-EditorApplication::EditorApplication(int width, int height)
-	: Application(width, height, "Editor")
+EditorApplication::EditorApplication()
+	: Application(800, 600, "Editor")
 {
 }
 
@@ -12,7 +14,15 @@ EditorApplication::~EditorApplication()
 
 void EditorApplication::Initialize()
 {
-	m_imgui.Initialize(GetMainWindow());
+	uint32_t extensionCount = 0;
+	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+	std::cout << extensionCount << " extensions supported\n";
+
+
+	glm::mat4 matrix{};
+	glm::vec4 vec{};
+	auto test = matrix * vec;
+	//m_imgui.Initialize(GetMainWindow());
 }
 
 void EditorApplication::Update() 
@@ -28,7 +38,7 @@ void EditorApplication::Render()
 void EditorApplication::Cleanup()
 {
 	Application::Cleanup();
-	m_imgui.Cleanup();
+	//m_imgui.Cleanup();
 }
 
 void EditorApplication::RenderGUI()

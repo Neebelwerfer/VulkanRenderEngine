@@ -4,7 +4,7 @@
 class EditorApplication : public Application
 {
 public:
-	EditorApplication(int width, int height);
+	EditorApplication();
 	~EditorApplication();
 
 protected:
