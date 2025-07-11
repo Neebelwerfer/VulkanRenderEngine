@@ -1,6 +1,9 @@
 #include <Engine/Application/Application.h>
 #include <Engine/Utility/ImGuiManager.h>
 
+#include <vulkan/vulkan.h>
+
+
 class EditorApplication : public Application
 {
 public:
@@ -16,6 +19,10 @@ protected:
 private:
 	void RenderGUI();
 
+	void InitVulkan();
+
 private:
 	ImGuiManager m_imgui;
+
+	VkInstance m_instance;
 };
