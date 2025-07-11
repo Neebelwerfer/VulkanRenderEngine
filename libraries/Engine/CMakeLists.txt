@@ -26,7 +26,7 @@ target_include_directories(Engine PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-target_link_libraries(Engine PUBLIC glm stb glfw imgui VulkanGL)
+target_link_libraries(Engine PUBLIC glm stb glfw imgui tinyobjloader spdlog nlohmann_json VulkanGL)
 set_target_properties(Engine PROPERTIES FOLDER "Libraries")
 target_precompile_headers(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/pch.h)
 set_lib_output_dirs(Engine)

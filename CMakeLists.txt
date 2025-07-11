@@ -1,8 +1,8 @@
 # ---------------------------------------------------------------------------------
 # Projects Settings
 # ---------------------------------------------------------------------------------
-project(Vulkan-Rendering-Engine)
 cmake_minimum_required(VERSION 3.3)
+project(Vulkan-Rendering-Engine)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -14,7 +14,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # External dependencies
 # -------------------------------------------------------
 include(${PROJECT_SOURCE_DIR}/cmake/Functions.cmake)
-find_package(Vulkan REQUIRED)
+find_package(Vulkan REQUIRED) 
 add_subdirectory(thirdparty)
 
 # -------------------------------------------------------

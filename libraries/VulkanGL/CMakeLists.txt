@@ -26,6 +26,6 @@ target_include_directories(VulkanGL PUBLIC
 )
 
 # Optional: If Engine depends on other libraries, link them here
-target_link_libraries(VulkanGL PUBLIC glm glfw imgui Vulkan::Vulkan)
+target_link_libraries(VulkanGL PUBLIC glm glfw imgui VulkanMemoryAllocator Vulkan::Vulkan)
 set_target_properties(VulkanGL PROPERTIES FOLDER "Libraries")
 set_lib_output_dirs(VulkanGL)
