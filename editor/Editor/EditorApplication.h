@@ -20,9 +20,19 @@ private:
 	void RenderGUI();
 
 	void InitVulkan();
+	void SetupDebugMessenger();
+
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
+		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+		void* pUserData);
+
+	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
 private:
 	ImGuiManager m_imgui;
 
 	VkInstance m_instance;
+	VkDebugUtilsMessengerEXT m_debugMessenger;
 };
