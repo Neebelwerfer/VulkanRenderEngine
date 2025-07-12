@@ -17,7 +17,7 @@ EditorApplication::~EditorApplication()
 void EditorApplication::Initialize()
 {
 	//m_imgui.Initialize(GetMainWindow());
-	m_graphicsInterface->Initialize();
+	m_graphicsInterface->Initialize(GetMainWindow());
 }
 
 void EditorApplication::Update() 

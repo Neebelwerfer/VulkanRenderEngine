@@ -1,22 +1,11 @@
 #include "GraphicsInterface.h"
 #include <stdexcept>
-#include <GLFW/glfw3.h>
 #include <iostream>
-
-const std::vector<const char*> validationLayers = {
-	"VK_LAYER_KHRONOS_validation"
-};
-
-#ifdef NDEBUG
-const bool enableValidationLayers = false;
-#else
-const bool enableValidationLayers = true;
-#endif
 
 GraphicsInterface::GraphicsInterface()
 	: m_instance(nullptr)
 	, m_debugMessenger(nullptr)
-	, m_device()
+	, m_device(std::make_shared<Device>())
 {
 }
 
@@ -29,20 +18,22 @@ void GraphicsInterface::Cleanup()
 	if (enableValidationLayers) {
 		DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
 	}
-	vkDestroyInstance(m_instance, nullptr);
 	m_device->Cleanup();
+	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+	vkDestroyInstance(m_instance, nullptr);
 }
 
-const Device* GraphicsInterface::GetDevice() const
+const std::shared_ptr<Device> GraphicsInterface::GetDevice() const
 {
 	return m_device;
 }
 
-void GraphicsInterface::Initialize()
+void GraphicsInterface::Initialize(Window& window)
 {
 	InitVulkan();
 	SetupDebugMessenger();
-	m_device->Initialize();
+	CreateSurface(window.GetGLFWwindow());
+	m_device->Initialize(m_instance, m_surface);
 }
 
 std::vector<const char*> GraphicsInterface::GetRequiredExtensions() {
@@ -139,6 +130,15 @@ void GraphicsInterface::SetupDebugMessenger() {
 	if (CreateDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
 		throw std::runtime_error("failed to set up debug messenger!");
 	}
+}
+
+void GraphicsInterface::CreateSurface(GLFWwindow* window)
+{
+	if (glfwCreateWindowSurface(m_instance, window, nullptr, &m_surface) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create window surface!");
+	}
+
+
 }
 
 void GraphicsInterface::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
