@@ -1,5 +1,6 @@
 #include <Engine/Application/Application.h>
 #include <Engine/Utility/ImGuiManager.h>
+#include <Engine/Graphics/GraphicsInterface.h>
 
 #include <vulkan/vulkan.h>
 
@@ -19,20 +20,7 @@ protected:
 private:
 	void RenderGUI();
 
-	void InitVulkan();
-	void SetupDebugMessenger();
-
-	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-		VkDebugUtilsMessageTypeFlagsEXT messageType,
-		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-		void* pUserData);
-
-	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-
 private:
+	std::shared_ptr<GraphicsInterface> m_graphicsInterface;
 	ImGuiManager m_imgui;
-
-	VkInstance m_instance;
-	VkDebugUtilsMessengerEXT m_debugMessenger;
 };

@@ -9,6 +9,11 @@ Device::~Device()
 {
 }
 
-void Device::Initialise()
+void Device::Initialize()
 {
+}
+
+void Device::Cleanup() 
+{
+
 }

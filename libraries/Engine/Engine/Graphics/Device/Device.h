@@ -2,9 +2,12 @@
 #include <vulkan/vulkan.h>
 
 class Device {
+
+public:
 	Device(VkInstance instance);
 	~Device();
 
-	void Initialise();
+	void Initialize();
+	void Cleanup();
 
 };
