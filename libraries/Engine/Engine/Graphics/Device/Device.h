@@ -1,5 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
+#include "Surface.h"
 #include <optional>
 #include <vector>
 
@@ -7,19 +8,19 @@
 class Device {
 
 public:
-	Device();
+	Device(Surface& surface);
 	~Device();
 
-	void Initialize(VkInstance& instance, VkSurfaceKHR& surface);
+	void Initialize(VkInstance instance);
 	void Cleanup() const;
 
 private:
-	void PickPhysicalDevice(VkInstance& instance, VkSurfaceKHR& surface);
-	bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR& surface);
-	int RateDeviceSuitability(VkPhysicalDevice device, VkSurfaceKHR& surface);
+	void PickPhysicalDevice(VkInstance& instance);
+	bool IsDeviceSuitable(VkPhysicalDevice device);
+	int RateDeviceSuitability(VkPhysicalDevice device);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 
-	void CreateLogicalDevice(VkSurfaceKHR& surface);
+	void CreateLogicalDevice();
 
 private:
 	struct QueueFamilyIndices {
@@ -36,10 +37,13 @@ private:
 		std::vector<VkSurfaceFormatKHR> formats;
 		std::vector<VkPresentModeKHR> presentModes;
 	};
-	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR& surface);
+	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
-	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR& surface);
+	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+
 private:
+	VkInstance m_instance;
+	Surface& m_surface;
 	VkPhysicalDevice m_physicalDevice;
 	VkDevice m_device;
 	VkQueue m_graphicsQueue;

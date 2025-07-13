@@ -5,7 +5,8 @@
 GraphicsInterface::GraphicsInterface()
 	: m_instance(nullptr)
 	, m_debugMessenger(nullptr)
-	, m_device(std::make_shared<Device>())
+	, m_surface()
+	, m_device(m_surface)
 {
 }
 
@@ -18,12 +19,12 @@ void GraphicsInterface::Cleanup()
 	if (enableValidationLayers) {
 		DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
 	}
-	m_device->Cleanup();
-	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+	m_device.Cleanup();
+	m_surface.Cleanup();
 	vkDestroyInstance(m_instance, nullptr);
 }
 
-const std::shared_ptr<Device> GraphicsInterface::GetDevice() const
+const Device GraphicsInterface::GetDevice() const
 {
 	return m_device;
 }
@@ -32,8 +33,8 @@ void GraphicsInterface::Initialize(Window& window)
 {
 	InitVulkan();
 	SetupDebugMessenger();
-	CreateSurface(window.GetGLFWwindow());
-	m_device->Initialize(m_instance, m_surface);
+	m_surface.Initialize(m_instance, window);
+	m_device.Initialize(m_instance);
 }
 
 std::vector<const char*> GraphicsInterface::GetRequiredExtensions() {
@@ -130,15 +131,6 @@ void GraphicsInterface::SetupDebugMessenger() {
 	if (CreateDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
 		throw std::runtime_error("failed to set up debug messenger!");
 	}
-}
-
-void GraphicsInterface::CreateSurface(GLFWwindow* window)
-{
-	if (glfwCreateWindowSurface(m_instance, window, nullptr, &m_surface) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create window surface!");
-	}
-
-
 }
 
 void GraphicsInterface::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {

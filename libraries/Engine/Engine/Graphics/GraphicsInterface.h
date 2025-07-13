@@ -1,10 +1,11 @@
 #pragma once
-#include <vulkan/vulkan.h>
-#include <Engine/Application/Window.h>
 #include "Device/Device.h"
+#include "Device/Surface.h"
+#include <Engine/Application/Window.h>
 #include <GLFW/glfw3.h>
-#include <vector>
 #include <memory>
+#include <vector>
+#include <vulkan/vulkan.h>
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -25,12 +26,11 @@ public:
 	virtual void Initialize(Window& window);
 	virtual void Cleanup();
 
-	const std::shared_ptr<Device> GetDevice() const;
+	const Device GetDevice() const;
 
 private:
 	void InitVulkan();
 	void SetupDebugMessenger();
-	void CreateSurface(GLFWwindow* window);
 
 	std::vector<const char*> GetRequiredExtensions();
 	bool CheckValidationLayerSupport();
@@ -48,7 +48,7 @@ private:
 
 private:
 	VkInstance m_instance;
-	VkSurfaceKHR m_surface;
-	std::shared_ptr<Device> m_device;
+	Surface m_surface;
+	Device m_device;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
 };
