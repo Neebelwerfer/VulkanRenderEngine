@@ -3,7 +3,7 @@
 #include <iostream>
 
 GraphicsInterface::GraphicsInterface()
-	: m_instance(nullptr)
+	: m_instanceHandle(nullptr)
 	, m_debugMessenger(nullptr)
 	, m_surface()
 	, m_device(m_surface)
@@ -17,11 +17,11 @@ GraphicsInterface::~GraphicsInterface()
 void GraphicsInterface::Cleanup() 
 {
 	if (enableValidationLayers) {
-		DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
+		DestroyDebugUtilsMessengerEXT(m_instanceHandle, m_debugMessenger, nullptr);
 	}
 	m_device.Cleanup();
 	m_surface.Cleanup();
-	vkDestroyInstance(m_instance, nullptr);
+	vkDestroyInstance(m_instanceHandle, nullptr);
 }
 
 const Device GraphicsInterface::GetDevice() const
@@ -33,8 +33,8 @@ void GraphicsInterface::Initialize(Window& window)
 {
 	InitVulkan();
 	SetupDebugMessenger();
-	m_surface.Initialize(m_instance, window);
-	m_device.Initialize(m_instance);
+	m_surface.Initialize(m_instanceHandle, window);
+	m_device.Initialize(m_instanceHandle);
 }
 
 std::vector<const char*> GraphicsInterface::GetRequiredExtensions() {
@@ -115,9 +115,9 @@ void GraphicsInterface::InitVulkan()
 		createInfo.enabledLayerCount = 0;
 	}
 
-	VkResult result = vkCreateInstance(&createInfo, nullptr, &m_instance);
+	VkResult result = vkCreateInstance(&createInfo, nullptr, &m_instanceHandle);
 
-	if (vkCreateInstance(&createInfo, nullptr, &m_instance) != VK_SUCCESS) {
+	if (vkCreateInstance(&createInfo, nullptr, &m_instanceHandle) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create instance!");
 	}
 }
@@ -128,7 +128,7 @@ void GraphicsInterface::SetupDebugMessenger() {
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
 	populateDebugMessengerCreateInfo(createInfo);
 
-	if (CreateDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
+	if (CreateDebugUtilsMessengerEXT(m_instanceHandle, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
 		throw std::runtime_error("failed to set up debug messenger!");
 	}
 }

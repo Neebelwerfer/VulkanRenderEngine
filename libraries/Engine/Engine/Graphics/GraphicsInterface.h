@@ -47,7 +47,7 @@ private:
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 
 private:
-	VkInstance m_instance;
+	VkInstance m_instanceHandle;
 	Surface m_surface;
 	Device m_device;
 	VkDebugUtilsMessengerEXT m_debugMessenger;

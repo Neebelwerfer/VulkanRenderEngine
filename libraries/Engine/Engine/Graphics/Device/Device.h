@@ -1,8 +1,8 @@
 #pragma once
-#include <vulkan/vulkan.h>
 #include "Surface.h"
 #include <optional>
 #include <vector>
+#include <vulkan/vulkan.h>
 
 
 class Device {
@@ -12,7 +12,7 @@ public:
 	~Device();
 
 	void Initialize(VkInstance instance);
-	void Cleanup() const;
+	void Cleanup();
 
 private:
 	void PickPhysicalDevice(VkInstance& instance);
@@ -22,12 +22,18 @@ private:
 
 	void CreateLogicalDevice();
 
+	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
+	const VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
+	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
+	void CreateSwapChain();
+	void CreateImageViews();
+
 private:
 	struct QueueFamilyIndices {
 		std::optional<uint32_t> graphicsFamily;
 		std::optional<uint32_t> presentFamily;
 
-		bool isComplete() {
+		inline bool isComplete() const {
 			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 	};
@@ -37,15 +43,23 @@ private:
 		std::vector<VkSurfaceFormatKHR> formats;
 		std::vector<VkPresentModeKHR> presentModes;
 	};
-	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
+
 
 	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
 private:
-	VkInstance m_instance;
+	VkInstance m_instanceHandle;
 	Surface& m_surface;
-	VkPhysicalDevice m_physicalDevice;
-	VkDevice m_device;
-	VkQueue m_graphicsQueue;
-	VkQueue m_presentQueue;
+	VkPhysicalDevice m_physicalDeviceHandle;
+	VkDevice m_deviceHandle;
+	VkQueue m_graphicsQueueHandle;
+	VkQueue m_presentQueueHandle;
+
+	VkSwapchainKHR m_swapChainHandle;
+	std::vector<VkImage> m_swapChainImages;
+	VkExtent2D m_swapChainExtent;
+	VkFormat m_swapChainImageFormat;
+
+	std::vector<VkImageView> swapChainImageViews;
 };

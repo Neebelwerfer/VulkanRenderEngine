@@ -11,7 +11,9 @@ public:
 	void Initialize(VkInstance instance, Window& window);
 	void Cleanup();
 
-	inline VkSurfaceKHR GetInternalSurface() const { return m_surface; }
+	inline VkSurfaceKHR GetHandle() const { return m_surface; }
+
+	const Window* GetWindow() const { return m_window; }
 
 private:
 	Window* m_window;
