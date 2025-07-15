@@ -15,9 +15,12 @@ public:
 	void Cleanup();
 
 	inline const VkDevice GetHandle() const { return m_deviceHandle; }
+	inline const VkSwapchainKHR GetSwapchainHandle() const { return m_swapChainHandle; }
 	inline const VkExtent2D GetSwapchainExtent() const { return m_swapChainExtent; }
 	inline const VkFormat& GetSwapchainImageFormat() const { return m_swapChainImageFormat; }
 	inline const std::vector<VkImageView>& GetSwapchainImageViews() const { return m_swapChainImageViews; }
+	inline const VkQueue GetGraphicsQueueHandle() const { return m_graphicsQueueHandle; }
+	inline const VkQueue GetPresentQueueHandle() const { return m_presentQueueHandle; }
 
 	struct QueueFamilyIndices {
 		std::optional<uint32_t> graphicsFamily;

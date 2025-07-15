@@ -26,6 +26,7 @@ public:
 	virtual void Initialize(Window& window);
 	virtual void Cleanup();
 
+	void Render();
 	const Device GetDevice() const;
 
 private:
@@ -35,6 +36,10 @@ private:
 	void SetupGraphicsPipeline();
 	void CreateFramebuffers();
 	void CreateCommandPool();
+	void CreateCommandBuffer();
+	void CreateSyncObjects();
+
+	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	std::vector<const char*> GetRequiredExtensions();
 	bool CheckValidationLayerSupport();
@@ -61,4 +66,9 @@ private:
 
 	std::vector<VkFramebuffer> m_swapChainFramebuffers;
 	VkCommandPool m_commandPoolHandle;
+	VkCommandBuffer m_commandBufferHandle;
+
+	VkSemaphore m_imageAvailableSemaphoreHandle;
+	VkSemaphore m_renderFinishedSemaphoreHandle;
+	VkFence m_inFlightFenceHandle;
 };

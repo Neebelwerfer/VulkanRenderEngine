@@ -33,6 +33,7 @@ void Device::Initialize(VkInstance instance)
 	PickPhysicalDevice(instance);
 	CreateLogicalDevice();
 	CreateSwapChain();
+	CreateImageViews();
 }
 
 void Device::Cleanup() 
@@ -293,6 +294,8 @@ void Device::CreateSwapChain()
 
 void Device::CreateImageViews()
 {
+	assert(m_swapChainImages.size() > 0);
+
 	m_swapChainImageViews.resize(m_swapChainImages.size());
 	for (size_t i = 0; i < m_swapChainImages.size(); i++) {
 		VkImageViewCreateInfo createInfo{};

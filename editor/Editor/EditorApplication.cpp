@@ -27,6 +27,7 @@ void EditorApplication::Update()
 
 void EditorApplication::Render()
 {
+	m_graphicsInterface->Render();
 	RenderGUI();
 }
 
