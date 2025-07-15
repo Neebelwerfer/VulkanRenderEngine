@@ -4,6 +4,8 @@
 #include <fstream>
 #include "Shaders/Shader.h"
 
+const int MAX_FRAMES_IN_FLIGHT = 2;
+
 GraphicsInterface::GraphicsInterface()
 	: m_instanceHandle(nullptr)
 	, m_debugMessenger(nullptr)
@@ -13,10 +15,6 @@ GraphicsInterface::GraphicsInterface()
 	, m_pipelineLayoutHandle(VK_NULL_HANDLE)
 	, m_renderPassHandle(VK_NULL_HANDLE)
 	, m_commandPoolHandle(VK_NULL_HANDLE)
-	, m_commandBufferHandle(VK_NULL_HANDLE)
-	, m_imageAvailableSemaphoreHandle(VK_NULL_HANDLE)
-	, m_inFlightFenceHandle(VK_NULL_HANDLE)
-	, m_renderFinishedSemaphoreHandle(VK_NULL_HANDLE)
 {
 }
 
@@ -32,9 +30,11 @@ void GraphicsInterface::Cleanup()
 		DestroyDebugUtilsMessengerEXT(m_instanceHandle, m_debugMessenger, nullptr);
 	}
 
-	vkDestroySemaphore(m_device.GetHandle(), m_imageAvailableSemaphoreHandle, nullptr);
-	vkDestroySemaphore(m_device.GetHandle(), m_renderFinishedSemaphoreHandle, nullptr);
-	vkDestroyFence(m_device.GetHandle(), m_inFlightFenceHandle, nullptr);
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		vkDestroySemaphore(m_device.GetHandle(), m_renderFinishedSemaphoreHandles[i], nullptr);
+		vkDestroySemaphore(m_device.GetHandle(), m_imageAvailableSemaphoreHandles[i], nullptr);
+		vkDestroyFence(m_device.GetHandle(), m_inFlightFenceHandles[i], nullptr);
+	}
 
 	vkDestroyCommandPool(m_device.GetHandle(), m_commandPoolHandle, nullptr);
 	for (auto framebuffer : m_swapChainFramebuffers) {
@@ -51,30 +51,31 @@ void GraphicsInterface::Cleanup()
 
 void GraphicsInterface::Render() 
 {
-	vkWaitForFences(m_device.GetHandle(), 1, &m_inFlightFenceHandle, VK_TRUE, UINT64_MAX);
-	vkResetFences(m_device.GetHandle(), 1, &m_inFlightFenceHandle);
+	vkWaitForFences(m_device.GetHandle(), 1, &m_inFlightFenceHandles[m_currentFrame], VK_TRUE, UINT64_MAX);
+	vkResetFences(m_device.GetHandle(), 1, &m_inFlightFenceHandles[m_currentFrame]);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(m_device.GetHandle(), m_device.GetSwapchainHandle(), UINT64_MAX, m_imageAvailableSemaphoreHandle, VK_NULL_HANDLE, &imageIndex);
-	vkResetCommandBuffer(m_commandBufferHandle, 0);
-	RecordCommandBuffer(m_commandBufferHandle, imageIndex);
+	vkAcquireNextImageKHR(m_device.GetHandle(), m_device.GetSwapchainHandle(), UINT64_MAX, m_imageAvailableSemaphoreHandles[m_currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+	vkResetCommandBuffer(m_commandBufferHandles[m_currentFrame], 0);
+	RecordCommandBuffer(m_commandBufferHandles[m_currentFrame], imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	VkSemaphore waitSemaphores[] = { m_imageAvailableSemaphoreHandle };
+	VkSemaphore waitSemaphores[] = { m_imageAvailableSemaphoreHandles[m_currentFrame] };
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &m_commandBufferHandle;
+	submitInfo.pCommandBuffers = &m_commandBufferHandles[m_currentFrame];
 
-	VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphoreHandle };
+	VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphoreHandles[m_currentFrame] };
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	if (vkQueueSubmit(m_device.GetGraphicsQueueHandle(), 1, &submitInfo, m_inFlightFenceHandle) != VK_SUCCESS) {
+	if (vkQueueSubmit(m_device.GetGraphicsQueueHandle(), 1, &submitInfo, m_inFlightFenceHandles[m_currentFrame]) != VK_SUCCESS) {
 		throw std::runtime_error("failed to submit draw command buffer!");
 	}
 
@@ -90,6 +91,7 @@ void GraphicsInterface::Render()
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 	vkQueuePresentKHR(m_device.GetPresentQueueHandle(), &presentInfo);
+	m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 const Device GraphicsInterface::GetDevice() const
@@ -477,19 +479,24 @@ void GraphicsInterface::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint3
 
 void GraphicsInterface::CreateCommandBuffer()
 {
+	m_commandBufferHandles.resize(MAX_FRAMES_IN_FLIGHT);
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.commandPool = m_commandPoolHandle;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = 1;
+	allocInfo.commandBufferCount = (uint32_t)m_commandBufferHandles.size();
 
-	if (vkAllocateCommandBuffers(m_device.GetHandle(), &allocInfo, &m_commandBufferHandle) != VK_SUCCESS) {
+	if (vkAllocateCommandBuffers(m_device.GetHandle(), &allocInfo, m_commandBufferHandles.data()) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
 }
 
 void GraphicsInterface::CreateSyncObjects()
 {
+	m_imageAvailableSemaphoreHandles.resize(MAX_FRAMES_IN_FLIGHT);
+	m_renderFinishedSemaphoreHandles.resize(MAX_FRAMES_IN_FLIGHT);
+	m_inFlightFenceHandles.resize(MAX_FRAMES_IN_FLIGHT);
+
 	VkSemaphoreCreateInfo semaphoreInfo{};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -497,10 +504,13 @@ void GraphicsInterface::CreateSyncObjects()
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	if (vkCreateSemaphore(m_device.GetHandle(), &semaphoreInfo, nullptr, &m_imageAvailableSemaphoreHandle) != VK_SUCCESS ||
-		vkCreateSemaphore(m_device.GetHandle(), &semaphoreInfo, nullptr, &m_renderFinishedSemaphoreHandle) != VK_SUCCESS ||
-		vkCreateFence(m_device.GetHandle(), &fenceInfo, nullptr, &m_inFlightFenceHandle) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create semaphores!");
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		if (vkCreateSemaphore(m_device.GetHandle(), &semaphoreInfo, nullptr, &m_imageAvailableSemaphoreHandles[i]) != VK_SUCCESS ||
+			vkCreateSemaphore(m_device.GetHandle(), &semaphoreInfo, nullptr, &m_renderFinishedSemaphoreHandles[i]) != VK_SUCCESS ||
+			vkCreateFence(m_device.GetHandle(), &fenceInfo, nullptr, &m_inFlightFenceHandles[i]) != VK_SUCCESS) {
+
+			throw std::runtime_error("failed to create synchronization objects for a frame!");
+		}
 	}
 }
 
