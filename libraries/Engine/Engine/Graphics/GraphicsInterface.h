@@ -31,6 +31,10 @@ public:
 private:
 	void InitVulkan();
 	void SetupDebugMessenger();
+	void CreatRenderPass();
+	void SetupGraphicsPipeline();
+	void CreateFramebuffers();
+	void CreateCommandPool();
 
 	std::vector<const char*> GetRequiredExtensions();
 	bool CheckValidationLayerSupport();
@@ -50,5 +54,11 @@ private:
 	VkInstance m_instanceHandle;
 	Surface m_surface;
 	Device m_device;
+	VkPipeline m_graphicsPipelineHandle;
+	VkRenderPass m_renderPassHandle;
+	VkPipelineLayout m_pipelineLayoutHandle;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
+
+	std::vector<VkFramebuffer> m_swapChainFramebuffers;
+	VkCommandPool m_commandPoolHandle;
 };

@@ -14,6 +14,21 @@ public:
 	void Initialize(VkInstance instance);
 	void Cleanup();
 
+	inline const VkDevice GetHandle() const { return m_deviceHandle; }
+	inline const VkExtent2D GetSwapchainExtent() const { return m_swapChainExtent; }
+	inline const VkFormat& GetSwapchainImageFormat() const { return m_swapChainImageFormat; }
+	inline const std::vector<VkImageView>& GetSwapchainImageViews() const { return m_swapChainImageViews; }
+
+	struct QueueFamilyIndices {
+		std::optional<uint32_t> graphicsFamily;
+		std::optional<uint32_t> presentFamily;
+
+		inline bool isComplete() const {
+			return graphicsFamily.has_value() && presentFamily.has_value();
+		}
+	};
+	QueueFamilyIndices FindQueueFamilies() const;
+
 private:
 	void PickPhysicalDevice(VkInstance& instance);
 	bool IsDeviceSuitable(VkPhysicalDevice device);
@@ -29,15 +44,7 @@ private:
 	void CreateImageViews();
 
 private:
-	struct QueueFamilyIndices {
-		std::optional<uint32_t> graphicsFamily;
-		std::optional<uint32_t> presentFamily;
-
-		inline bool isComplete() const {
-			return graphicsFamily.has_value() && presentFamily.has_value();
-		}
-	};
-
+	
 	struct SwapChainSupportDetails {
 		VkSurfaceCapabilitiesKHR capabilities;
 		std::vector<VkSurfaceFormatKHR> formats;
@@ -46,7 +53,7 @@ private:
 	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 
 
-	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 
 private:
 	VkInstance m_instanceHandle;
@@ -61,5 +68,5 @@ private:
 	VkExtent2D m_swapChainExtent;
 	VkFormat m_swapChainImageFormat;
 
-	std::vector<VkImageView> swapChainImageViews;
+	std::vector<VkImageView> m_swapChainImageViews;
 };

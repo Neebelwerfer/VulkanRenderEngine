@@ -9,7 +9,13 @@
       "installRoot": "${projectDir}\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
-      "ctestCommandArgs": ""
+      "ctestCommandArgs": "",
+      "vendor": {
+        "microsoft.com/VisualStudioSettings": {
+          "intelliSenseMode": "windows-msvc-x64",
+          "localDebuggerWorkingDirectory": "${sourceDir}/bin/Editor/debug"
+        }
+      }
     }
   ]
 }

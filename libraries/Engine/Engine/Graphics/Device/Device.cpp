@@ -37,7 +37,7 @@ void Device::Initialize(VkInstance instance)
 
 void Device::Cleanup() 
 {
-	for (auto imageView : swapChainImageViews) {
+	for (auto imageView : m_swapChainImageViews) {
 		vkDestroyImageView(m_deviceHandle, imageView, nullptr);
 	}
 	vkDestroySwapchainKHR(m_deviceHandle, m_swapChainHandle, nullptr);
@@ -293,7 +293,7 @@ void Device::CreateSwapChain()
 
 void Device::CreateImageViews()
 {
-	swapChainImageViews.resize(m_swapChainImages.size());
+	m_swapChainImageViews.resize(m_swapChainImages.size());
 	for (size_t i = 0; i < m_swapChainImages.size(); i++) {
 		VkImageViewCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -313,7 +313,7 @@ void Device::CreateImageViews()
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		if (vkCreateImageView(m_deviceHandle, &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
+		if (vkCreateImageView(m_deviceHandle, &createInfo, nullptr, &m_swapChainImageViews[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create image views!");
 		}
 	}
@@ -344,7 +344,12 @@ Device::SwapChainSupportDetails Device::QuerySwapChainSupport(VkPhysicalDevice d
 	return details;
 }
 
-Device::QueueFamilyIndices Device::FindQueueFamilies(VkPhysicalDevice device)
+Device::QueueFamilyIndices Device::FindQueueFamilies() const
+{
+	return FindQueueFamilies(m_physicalDeviceHandle);
+}
+
+Device::QueueFamilyIndices Device::FindQueueFamilies(VkPhysicalDevice device) const
 {
 	QueueFamilyIndices indices;
 	uint32_t queueFamilyCount = 0;

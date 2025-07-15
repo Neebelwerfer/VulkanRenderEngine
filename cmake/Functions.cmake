@@ -6,7 +6,7 @@ function(copy_or_symlink_resources target_name)
     if(WIN32)
         message(STATUS "Windows detected: Using copy instead of symlink for resources")
         add_custom_command(TARGET ${target_name} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
                 "${PROJECT_SOURCE_DIR}/resources"
                 "${resource_dest}"
             COMMENT "Copying resources to ${resource_dest}"
