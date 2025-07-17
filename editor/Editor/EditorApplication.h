@@ -21,6 +21,6 @@ private:
 	void RenderGUI();
 
 private:
-	std::shared_ptr<GraphicsInterface> m_graphicsInterface;
+	std::unique_ptr<GraphicsInterface> m_graphicsInterface;
 	ImGuiManager m_imgui;
 };

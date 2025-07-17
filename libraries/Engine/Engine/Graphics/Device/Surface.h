@@ -5,18 +5,18 @@
 class Surface
 {
 public:
-	Surface();
+	Surface(VkInstance instance, Window& window);
 	~Surface();
 
-	void Initialize(VkInstance instance, Window& window);
 	void Cleanup();
 
-	inline VkSurfaceKHR GetHandle() const { return m_surface; }
+	inline VkSurfaceKHR GetHandle() const { return m_surfaceHandle; }
+	inline const Window& GetWindow() const { return m_window; }
 
-	const Window* GetWindow() const { return m_window; }
+	void GetFramebufferSize(int& width, int& height) const;
 
 private:
-	Window* m_window;
+	Window& m_window;
 	VkInstance m_instance;
-	VkSurfaceKHR m_surface;
+	VkSurfaceKHR m_surfaceHandle;
 };

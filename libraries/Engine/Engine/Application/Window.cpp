@@ -23,6 +23,11 @@ void Window::GetDimensions(int& width, int& height) const
 	glfwGetWindowSize(m_window, &width, &height);
 }
 
+void Window::GetFramebufferSize(int& width, int& height) const
+{
+	glfwGetFramebufferSize(m_window, &width, &height);
+}
+
 float Window::GetAspectRatio() const
 {
 	int width, height;
@@ -38,9 +43,4 @@ void Window::Close() const
 bool Window::ShouldClose() const
 {
 	return glfwWindowShouldClose(m_window);
-}
-
-void Window::SwapBuffers()
-{
-	glfwSwapBuffers(m_window);
 }

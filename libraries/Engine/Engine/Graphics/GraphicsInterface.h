@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <vulkan/vulkan.h>
+#include "Swapchain.h"
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -27,7 +28,9 @@ public:
 	virtual void Cleanup();
 
 	void Render();
-	const Device GetDevice() const;
+	
+	std::shared_ptr<Device> GetDevice();
+	const std::shared_ptr<Device> GetDevice() const;
 
 private:
 	void InitVulkan();
@@ -57,8 +60,10 @@ private:
 
 private:
 	VkInstance m_instanceHandle;
-	Surface m_surface;
-	Device m_device;
+	std::shared_ptr<Surface> m_surface;
+	std::shared_ptr<Device> m_device;
+	std::unique_ptr<Swapchain> m_swapchain;
+
 	VkPipeline m_graphicsPipelineHandle;
 	VkRenderPass m_renderPassHandle;
 	VkPipelineLayout m_pipelineLayoutHandle;

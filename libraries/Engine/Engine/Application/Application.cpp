@@ -47,7 +47,6 @@ void Application::Run()
 			Render();
 
 			// Swap buffers and poll events at the end of the frame
-			m_mainWindow.SwapBuffers();
 			glfwPollEvents();
 		}
 

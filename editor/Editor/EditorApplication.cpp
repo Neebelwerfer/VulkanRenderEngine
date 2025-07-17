@@ -6,7 +6,7 @@
 
 EditorApplication::EditorApplication()
 	: Application(800, 600, "Editor")
-	, m_graphicsInterface(std::make_shared<GraphicsInterface>())
+	, m_graphicsInterface(std::make_unique<GraphicsInterface>())
 {
 }
 

@@ -11,7 +11,7 @@ public:
 		Fragment
 	};
 
-	Shader(const Device& device, const char* filename, ShaderTypes type);
+	Shader(const std::shared_ptr<Device> device, const char* filename, ShaderTypes type);
 	~Shader();
 
 	inline VkShaderModule GetHandle() { return m_shaderModule; }
@@ -22,5 +22,5 @@ private:
 private:
 	VkShaderModule m_shaderModule;
 	ShaderTypes m_type;
-	const Device& m_device;
+	const std::shared_ptr<Device> m_device;
 };
