@@ -1,7 +1,6 @@
 #pragma once
 #include "Device/Device.h"
 #include "Device/Surface.h"
-#include <Engine/Application/Window.h>
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <vector>
@@ -21,10 +20,10 @@ const std::vector<const char*> validationLayers = {
 class GraphicsInterface
 {
 public:
-	GraphicsInterface();
+	GraphicsInterface(IWindow& window);
 	~GraphicsInterface();
 
-	virtual void Initialize(Window& window);
+	virtual void Initialize(const char* title);
 	virtual void Cleanup();
 
 	void Render();
@@ -33,7 +32,7 @@ public:
 	const std::shared_ptr<Device> GetDevice() const;
 
 private:
-	void InitVulkan();
+	void InitVulkan(const char* title);
 	void SetupDebugMessenger();
 	void CreatRenderPass();
 	void SetupGraphicsPipeline();
@@ -60,6 +59,7 @@ private:
 
 private:
 	VkInstance m_instanceHandle;
+	IWindow& m_window;
 	std::shared_ptr<Surface> m_surface;
 	std::shared_ptr<Device> m_device;
 	std::unique_ptr<Swapchain> m_swapchain;

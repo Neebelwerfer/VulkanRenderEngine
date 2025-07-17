@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Window.h"
 #include <string>
+#include <Engine/Graphics/Interfaces/IWindow.h>
+#include <Engine/Graphics/GraphicsInterface.h>
 #include <memory>
 
 class Application {
@@ -21,8 +22,8 @@ protected:
 	virtual void Render();
 	virtual void Cleanup();
 
-	inline Window& GetMainWindow() { return m_mainWindow; }
-	inline const Window& GetMainWindow() const { return m_mainWindow; }
+	IWindow& GetMainWindow() { return *m_mainWindow; }
+	inline const IWindow& GetMainWindow() const { return *m_mainWindow; }
 
 	// Get time in seconds from the start of the application
 	inline float GetCurrentTime() const { return m_currentTime; }
@@ -37,9 +38,12 @@ protected:
 	// End the execution of the application and return the exit code (0 for OK)
 	// Optionally provide an error message, if the exit code is not 0
 	void Terminate(int exitCode, const char* errorMessage = nullptr);	
+
+protected:
+	std::unique_ptr<GraphicsInterface> m_graphicsInterface;
 	
 private:
-	Window m_mainWindow;
+	std::unique_ptr<IWindow> m_mainWindow;
 		
 	// Time in seconds from the start of the application
 	float m_currentTime;
@@ -50,4 +54,6 @@ private:
 	int m_exitCode;
 	// Error message to display on exit
 	std::string m_errorMessage;
+
+
 };

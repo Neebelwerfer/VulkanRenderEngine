@@ -1,22 +1,21 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include <Engine/Application/Window.h>
+#include <Engine/Graphics/Interfaces/IWindow.h>
+#include <memory>
 
 class Surface
 {
 public:
-	Surface(VkInstance instance, Window& window);
+	Surface(VkInstance instance, IWindow& window);
 	~Surface();
 
 	void Cleanup();
 
 	inline VkSurfaceKHR GetHandle() const { return m_surfaceHandle; }
-	inline const Window& GetWindow() const { return m_window; }
-
-	void GetFramebufferSize(int& width, int& height) const;
+	inline const IWindow& GetWindow() const { return m_window; }
 
 private:
-	Window& m_window;
+	IWindow& m_window;
 	VkInstance m_instance;
 	VkSurfaceKHR m_surfaceHandle;
 };

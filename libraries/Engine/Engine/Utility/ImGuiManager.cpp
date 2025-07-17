@@ -1,6 +1,5 @@
 #include "ImGuiManager.h"
 
-#include <Engine/Application/Window.h>
 #include <imgui.h>
 
 #include <imgui_impl_glfw.h>
@@ -20,11 +19,15 @@ ImGuiManager::~ImGuiManager()
 	ImGui::DestroyContext();
 }
 
-void ImGuiManager::Initialize(::Window& window)
+void ImGuiManager::Initialize(::IWindow& window)
 {
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui_ImplGlfw_InitForVulkan(window.GetGLFWwindow(), true);
+
+	auto nativeHandle = window.GetNativeWindow();
+	assert(nativeHandle.type == IWindow::NativeHandleType::GLFW);
+
+	ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(nativeHandle.glfw.ptr), true);
 }
 
 void ImGuiManager::Cleanup()

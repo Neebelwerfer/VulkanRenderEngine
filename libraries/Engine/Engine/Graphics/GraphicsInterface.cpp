@@ -6,7 +6,7 @@
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
-GraphicsInterface::GraphicsInterface()
+GraphicsInterface::GraphicsInterface(IWindow& window)
 	: m_instanceHandle(nullptr)
 	, m_debugMessenger(nullptr)
 	, m_surface(nullptr)
@@ -16,6 +16,7 @@ GraphicsInterface::GraphicsInterface()
 	, m_pipelineLayoutHandle(VK_NULL_HANDLE)
 	, m_renderPassHandle(VK_NULL_HANDLE)
 	, m_commandPoolHandle(VK_NULL_HANDLE)
+	, m_window(window)
 {
 }
 
@@ -93,7 +94,9 @@ void GraphicsInterface::Render()
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 	vkQueuePresentKHR(m_device->GetPresentQueueHandle(), &presentInfo);
+	
 	m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+	m_surface->GetWindow().PollEvents();
 }
 
 std::shared_ptr<Device> GraphicsInterface::GetDevice()
@@ -106,12 +109,12 @@ const std::shared_ptr<Device> GraphicsInterface::GetDevice() const
 	return m_device;
 }
 
-void GraphicsInterface::Initialize(Window& window)
+void GraphicsInterface::Initialize(const char* title)
 {
-	InitVulkan();
+	InitVulkan(title);
 	SetupDebugMessenger();
 
-	m_surface = std::make_shared<Surface>(m_instanceHandle, window);
+	m_surface = std::make_shared<Surface>(m_instanceHandle, m_window);
 	m_device = std::make_shared<Device>(m_instanceHandle, m_surface);
 	m_swapchain = std::make_unique<Swapchain>(m_device, m_surface);
 
@@ -162,7 +165,7 @@ bool GraphicsInterface::CheckValidationLayerSupport() {
 	return true;
 }
 
-void GraphicsInterface::InitVulkan()
+void GraphicsInterface::InitVulkan(const char* title)
 {
 	if (enableValidationLayers && !CheckValidationLayerSupport()) {
 		throw std::runtime_error("validation layers requested, but not available!");
@@ -170,10 +173,10 @@ void GraphicsInterface::InitVulkan()
 
 	VkApplicationInfo appInfo{};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Hello Triangle";
-	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.pApplicationName = title;
+	appInfo.applicationVersion = VK_MAKE_API_VERSION(0, 1, 0, 0);
 	appInfo.pEngineName = "Vulkan Render Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(0, 1, 0);
+	appInfo.engineVersion = VK_MAKE_API_VERSION(0, 0, 1, 0);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	VkInstanceCreateInfo createInfo{};

@@ -1,16 +1,19 @@
 #include "Application.h"
 #include <iostream>
 #include <chrono>
+#include <Engine/Graphics/Windows/GLFWWindow.h>
 
 Application::Application(int width, int height, const char* title)
-	: m_mainWindow(width, height, title)
-	, m_currentTime(0)
+	: m_currentTime(0)
 	, m_deltaTime(0)
 	, m_exitCode(0)
 {
-	if (!m_mainWindow.IsValid())
+	m_mainWindow = std::make_unique<GLFWWindow>(width, height, title);
+	m_graphicsInterface = std::make_unique<GraphicsInterface>(*m_mainWindow);
+
+	if (!m_mainWindow->IsValid())
 	{
-		Terminate(-1, "Failed to create GLFW window");
+		Terminate(-1, "Failed to create window");
 		return;
 	}
 }
@@ -26,6 +29,7 @@ Application::~Application()
 
 void Application::Initialize()
 {
+	m_graphicsInterface->Initialize("title");
 }
 
 
@@ -46,8 +50,7 @@ void Application::Run()
 
 			Render();
 
-			// Swap buffers and poll events at the end of the frame
-			glfwPollEvents();
+			m_mainWindow->PollEvents();
 		}
 
 		Cleanup();
@@ -56,7 +59,7 @@ void Application::Run()
 
 void Application::Render()
 {
-
+	m_graphicsInterface->Render();
 }
 
 void Application::Update()
@@ -65,9 +68,11 @@ void Application::Update()
 
 void Application::Cleanup()
 {
-	if (m_mainWindow.IsValid())
+	m_graphicsInterface->Cleanup();
+
+	if (m_mainWindow->IsValid())
 	{
-		m_mainWindow.Close();
+		m_mainWindow->Close();
 	}
 }
 
@@ -79,7 +84,7 @@ void Application::UpdateTime(float newCurrentTime)
 
 bool Application::IsRunning() const
 {
-	return m_mainWindow.IsValid() && !m_mainWindow.ShouldClose();
+	return m_mainWindow->IsValid() && !m_mainWindow->ShouldClose();
 }
 
 void Application::Terminate(int exitCode, const char* errorMessage)
@@ -93,9 +98,9 @@ void Application::Terminate(int exitCode, const char* errorMessage)
 	}
 
 	// If termination is requested and main window is still valid, request to close
-	if (m_mainWindow.IsValid())
+	if (m_mainWindow->IsValid())
 	{
-		m_mainWindow.Close();
+		m_mainWindow->Close();
 	}
 
 	// Force assert here to detect error termination
