@@ -17,11 +17,11 @@ const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
 };
 
-class GraphicsInterface
+class GraphicsManager
 {
 public:
-	GraphicsInterface(IWindow& window);
-	~GraphicsInterface();
+	GraphicsManager(IWindow& window);
+	~GraphicsManager();
 
 	virtual void Initialize(const char* title);
 	virtual void Cleanup();

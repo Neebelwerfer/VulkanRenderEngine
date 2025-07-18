@@ -9,7 +9,7 @@ Application::Application(int width, int height, const char* title)
 	, m_exitCode(0)
 {
 	m_mainWindow = std::make_unique<GLFWWindow>(width, height, title);
-	m_graphicsInterface = std::make_unique<GraphicsInterface>(*m_mainWindow);
+	m_graphicsManager = std::make_unique<GraphicsManager>(*m_mainWindow);
 
 	if (!m_mainWindow->IsValid())
 	{

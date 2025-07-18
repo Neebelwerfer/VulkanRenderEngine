@@ -2,7 +2,7 @@
 
 #include <string>
 #include <Engine/Graphics/Interfaces/IWindow.h>
-#include <Engine/Graphics/GraphicsInterface.h>
+#include <Engine/Graphics/GraphicsManager.h>
 #include <memory>
 
 class Application {
@@ -40,7 +40,7 @@ protected:
 	void Terminate(int exitCode, const char* errorMessage = nullptr);	
 
 protected:
-	std::unique_ptr<GraphicsInterface> m_graphicsInterface;
+	std::unique_ptr<GraphicsManager> m_graphicsManager;
 	
 private:
 	std::unique_ptr<IWindow> m_mainWindow;

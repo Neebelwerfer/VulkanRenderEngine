@@ -1,4 +1,4 @@
-#include "GraphicsInterface.h"
+#include "GraphicsManager.h"
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
@@ -6,7 +6,7 @@
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
-GraphicsInterface::GraphicsInterface(IWindow& window)
+GraphicsManager::GraphicsManager(IWindow& window)
 	: m_instanceHandle(nullptr)
 	, m_debugMessenger(nullptr)
 	, m_surface(nullptr)
@@ -20,11 +20,11 @@ GraphicsInterface::GraphicsInterface(IWindow& window)
 {
 }
 
-GraphicsInterface::~GraphicsInterface()
+GraphicsManager::~GraphicsManager()
 {
 }
 
-void GraphicsInterface::Cleanup() 
+void GraphicsManager::Cleanup() 
 {
 	vkDeviceWaitIdle(m_device->GetHandle());
 
@@ -52,7 +52,7 @@ void GraphicsInterface::Cleanup()
 	vkDestroyInstance(m_instanceHandle, nullptr);
 }
 
-void GraphicsInterface::Render() 
+void GraphicsManager::Render() 
 {
 	vkWaitForFences(m_device->GetHandle(), 1, &m_inFlightFenceHandles[m_currentFrame], VK_TRUE, UINT64_MAX);
 	vkResetFences(m_device->GetHandle(), 1, &m_inFlightFenceHandles[m_currentFrame]);
@@ -99,17 +99,17 @@ void GraphicsInterface::Render()
 	m_surface->GetWindow().PollEvents();
 }
 
-std::shared_ptr<Device> GraphicsInterface::GetDevice()
+std::shared_ptr<Device> GraphicsManager::GetDevice()
 {
 	return m_device;
 }
 
-const std::shared_ptr<Device> GraphicsInterface::GetDevice() const
+const std::shared_ptr<Device> GraphicsManager::GetDevice() const
 {
 	return m_device;
 }
 
-void GraphicsInterface::Initialize(const char* title)
+void GraphicsManager::Initialize(const char* title)
 {
 	InitVulkan(title);
 	SetupDebugMessenger();
@@ -126,7 +126,7 @@ void GraphicsInterface::Initialize(const char* title)
 	CreateSyncObjects();
 }
 
-std::vector<const char*> GraphicsInterface::GetRequiredExtensions() {
+std::vector<const char*> GraphicsManager::GetRequiredExtensions() {
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -140,7 +140,7 @@ std::vector<const char*> GraphicsInterface::GetRequiredExtensions() {
 	return extensions;
 }
 
-bool GraphicsInterface::CheckValidationLayerSupport() {
+bool GraphicsManager::CheckValidationLayerSupport() {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -165,7 +165,7 @@ bool GraphicsInterface::CheckValidationLayerSupport() {
 	return true;
 }
 
-void GraphicsInterface::InitVulkan(const char* title)
+void GraphicsManager::InitVulkan(const char* title)
 {
 	if (enableValidationLayers && !CheckValidationLayerSupport()) {
 		throw std::runtime_error("validation layers requested, but not available!");
@@ -211,7 +211,7 @@ void GraphicsInterface::InitVulkan(const char* title)
 	}
 }
 
-void GraphicsInterface::SetupDebugMessenger() {
+void GraphicsManager::SetupDebugMessenger() {
 	if (!enableValidationLayers) return;
 
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
@@ -222,7 +222,7 @@ void GraphicsInterface::SetupDebugMessenger() {
 	}
 }
 
-void GraphicsInterface::CreatRenderPass()
+void GraphicsManager::CreatRenderPass()
 {
 	VkAttachmentDescription colorAttachment{};
 	colorAttachment.format = m_swapchain->GetImageFormat();
@@ -266,7 +266,7 @@ void GraphicsInterface::CreatRenderPass()
 	}
 }
 
-void GraphicsInterface::SetupGraphicsPipeline()
+void GraphicsManager::SetupGraphicsPipeline()
 {
 	auto vertShader = Shader(m_device, "./resources/shaders/vert.spv", Shader::Vertex);
 	auto fragShader = Shader(m_device, "./resources/shaders/frag.spv", Shader::Fragment);
@@ -402,7 +402,7 @@ void GraphicsInterface::SetupGraphicsPipeline()
 	}
 }
 
-void GraphicsInterface::CreateFramebuffers()
+void GraphicsManager::CreateFramebuffers()
 {
 	auto& swapchainImageViews = m_swapchain->GetImageViews();
 
@@ -429,7 +429,7 @@ void GraphicsInterface::CreateFramebuffers()
 	}
 }
 
-void GraphicsInterface::CreateCommandPool()
+void GraphicsManager::CreateCommandPool()
 {
 	Device::QueueFamilyIndices queueFamilyIndices = m_device->FindQueueFamilies();
 
@@ -443,7 +443,7 @@ void GraphicsInterface::CreateCommandPool()
 	}
 }
 
-void GraphicsInterface::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
+void GraphicsManager::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
 
 	assert(m_swapChainFramebuffers.size() > 0 && m_swapChainFramebuffers.size() >= imageIndex + 1);
 	VkCommandBufferBeginInfo beginInfo{};
@@ -492,7 +492,7 @@ void GraphicsInterface::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint3
 	}
 }
 
-void GraphicsInterface::CreateCommandBuffer()
+void GraphicsManager::CreateCommandBuffer()
 {
 	m_commandBufferHandles.resize(MAX_FRAMES_IN_FLIGHT);
 	VkCommandBufferAllocateInfo allocInfo{};
@@ -506,7 +506,7 @@ void GraphicsInterface::CreateCommandBuffer()
 	}
 }
 
-void GraphicsInterface::CreateSyncObjects()
+void GraphicsManager::CreateSyncObjects()
 {
 	m_imageAvailableSemaphoreHandles.resize(MAX_FRAMES_IN_FLIGHT);
 	m_renderFinishedSemaphoreHandles.resize(MAX_FRAMES_IN_FLIGHT);
@@ -529,7 +529,7 @@ void GraphicsInterface::CreateSyncObjects()
 	}
 }
 
-void GraphicsInterface::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
+void GraphicsManager::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
 	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -538,14 +538,14 @@ void GraphicsInterface::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCr
 }
 
 
-VKAPI_ATTR VkBool32 VKAPI_CALL GraphicsInterface::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+VKAPI_ATTR VkBool32 VKAPI_CALL GraphicsManager::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
 	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
 	return VK_FALSE;
 }
 
-VkResult GraphicsInterface::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
+VkResult GraphicsManager::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
 	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 	if (func != nullptr) {
 		return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
@@ -555,7 +555,7 @@ VkResult GraphicsInterface::CreateDebugUtilsMessengerEXT(VkInstance instance, co
 	}
 }
 
-void GraphicsInterface::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+void GraphicsManager::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
 	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
 	if (func != nullptr) {
 		func(instance, debugMessenger, pAllocator);
