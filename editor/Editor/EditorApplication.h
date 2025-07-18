@@ -1,8 +1,5 @@
-#include <Engine/Application/Application.h>
+#include <Engine/Core/Application.h>
 #include <Engine/Utility/ImGuiManager.h>
-#include <Engine/Graphics/GraphicsInterface.h>
-
-#include <vulkan/vulkan.h>
 
 
 class EditorApplication : public Application
