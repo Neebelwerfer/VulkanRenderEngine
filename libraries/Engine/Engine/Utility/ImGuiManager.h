@@ -1,4 +1,5 @@
 #pragma once
+#include <Engine/Graphics/Interfaces/IWindow.h>
 
 class Window;
 
@@ -20,7 +21,7 @@ public:
 	ImGuiManager();
 	~ImGuiManager();
 
-	void Initialize(::Window& window);
+	void Initialize(::IWindow& window);
 	void Cleanup();
 
 	void BeginFrame();

@@ -1,8 +1,5 @@
-#include <Engine/Application/Application.h>
+#include <Engine/Core/Application.h>
 #include <Engine/Utility/ImGuiManager.h>
-#include <Engine/Graphics/GraphicsInterface.h>
-
-#include <vulkan/vulkan.h>
 
 
 class EditorApplication : public Application
@@ -21,6 +18,5 @@ private:
 	void RenderGUI();
 
 private:
-	std::unique_ptr<GraphicsInterface> m_graphicsInterface;
 	ImGuiManager m_imgui;
 };

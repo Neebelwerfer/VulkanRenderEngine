@@ -1,0 +1,9 @@
+set(DEVICE_FILES
+    Device.cpp
+    Device.h
+    Surface.cpp
+    Surface.h
+)
+
+list(TRANSFORM DEVICE_FILES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
+set(GRAPHICS_FILES ${GRAPHICS_FILES} ${DEVICE_FILES} PARENT_SCOPE)

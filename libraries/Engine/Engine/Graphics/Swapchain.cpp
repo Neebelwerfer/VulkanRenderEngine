@@ -53,7 +53,7 @@ const VkExtent2D Swapchain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& cap
 	}
 	else {
 		int width, height;
-		m_surface->GetFramebufferSize(width, height);
+		m_surface->GetWindow().GetFramebufferSize(width, height);
 
 		VkExtent2D actualExtent = {
 			static_cast<uint32_t>(width),
