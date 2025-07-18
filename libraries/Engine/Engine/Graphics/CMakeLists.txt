@@ -12,6 +12,8 @@ add_subdirectory(Device)
 add_subdirectory(Shaders)
 add_subdirectory(Interfaces)
 add_subdirectory(Windows)
+add_subdirectory(Renderer)
+add_subdirectory(Textures)
 
 set(ENGINE_FILES ${ENGINE_FILES} ${GRAPHICS_FILES} PARENT_SCOPE)
 
