@@ -1,5 +1,5 @@
 #include "Device.h"
-#include <Engine/Graphics/GraphicsInterface.h>
+#include <Engine/Graphics/GraphicsManager.h>
 #include <iostream>
 #include <map>
 #include <set>

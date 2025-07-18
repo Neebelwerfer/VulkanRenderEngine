@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <Engine/Graphics/Windows/GLFWWindow.h>
+#include <cassert>
 
 Application::Application(int width, int height, const char* title)
 	: m_currentTime(0)
@@ -29,7 +30,7 @@ Application::~Application()
 
 void Application::Initialize()
 {
-	m_graphicsInterface->Initialize("title");
+	m_graphicsManager->Initialize("title");
 }
 
 
@@ -59,7 +60,7 @@ void Application::Run()
 
 void Application::Render()
 {
-	m_graphicsInterface->Render();
+	m_graphicsManager->Render();
 }
 
 void Application::Update()
@@ -68,7 +69,7 @@ void Application::Update()
 
 void Application::Cleanup()
 {
-	m_graphicsInterface->Cleanup();
+	m_graphicsManager->Cleanup();
 
 	if (m_mainWindow->IsValid())
 	{
