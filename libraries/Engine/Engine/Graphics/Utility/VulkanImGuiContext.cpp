@@ -9,7 +9,7 @@ VulkanImGuiContext::VulkanImGuiContext(IWindow& window): ImGuiBase(window)
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	auto windowHandle = window.GetNativeWindow();
-	if (windowHandle.type == IWindow::NativeHandleType::GLFW)
+	if (windowHandle.type == NativeWindowHandleType::GLFW)
 	{
 		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(windowHandle.glfw.ptr), true);
 	}

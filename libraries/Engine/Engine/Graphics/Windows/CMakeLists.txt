@@ -1,6 +1,6 @@
 set(WINDOW_FILES
-    GLFWWindow.cpp
-    GLFWWindow.h
+    GLFWWindowImpl.cpp
+    GLFWWindowImpl.h
 )
 
 list(TRANSFORM WINDOW_FILES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")

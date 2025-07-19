@@ -24,7 +24,7 @@ private:
 	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
 	const VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
 	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
-	void CreateSwapChain();
+	void CreateSwapChain(VkSwapchainKHR oldHandle);
 	void CreateImageViews();
 	void CreateRenderPass();
 	void CreateFramebuffers();

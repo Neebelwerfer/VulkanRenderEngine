@@ -1,15 +1,15 @@
 #include "Application.h"
-#include <iostream>
-#include <chrono>
-#include <Engine/Graphics/Windows/GLFWWindow.h>
+#include <Engine/Graphics/Windows/GLFWWindowImpl.h>
 #include <cassert>
+#include <chrono>
+#include <iostream>
 
 Application::Application(int width, int height, const char* title)
 	: m_currentTime(0)
 	, m_deltaTime(0)
 	, m_exitCode(0)
 {
-	m_mainWindow = std::make_unique<GLFWWindow>(width, height, title);
+	m_mainWindow = std::make_unique<GLFWWindowImpl>(width, height, title);
 	m_graphicsManager = std::make_unique<GraphicsManager>(*m_mainWindow);
 
 	if (!m_mainWindow->IsValid())

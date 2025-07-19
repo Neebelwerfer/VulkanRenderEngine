@@ -9,7 +9,7 @@ Surface::Surface(VkInstance instance, IWindow& window)
 {
 	auto nativeWindowHandle = window.GetNativeWindow();
 
-	if (nativeWindowHandle.type == IWindow::NativeHandleType::GLFW)
+	if (nativeWindowHandle.type == NativeWindowHandleType::GLFW)
 	{
 		auto glfwWindow = static_cast<GLFWwindow*>(nativeWindowHandle.glfw.ptr);
 		if (glfwCreateWindowSurface(instance, glfwWindow, nullptr, &m_surfaceHandle) != VK_SUCCESS) {

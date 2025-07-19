@@ -8,7 +8,7 @@ Swapchain::Swapchain(std::shared_ptr<Device> device, std::shared_ptr<Surface> su
 	, m_extent()
 	, m_imageFormat()
 {
-	CreateSwapChain();
+	CreateSwapChain(VK_NULL_HANDLE);
 	CreateImageViews();
 	CreateRenderPass();
 	CreateFramebuffers();
@@ -33,6 +33,20 @@ void Swapchain::Cleanup()
 
 void Swapchain::Recreate()
 {
+	vkDeviceWaitIdle(m_device->GetHandle());
+
+	for (auto framebuffer : m_framebuffers) {
+		vkDestroyFramebuffer(m_device->GetHandle(), framebuffer, nullptr);
+	}
+
+	for (auto imageView : m_imageViews) {
+		vkDestroyImageView(m_device->GetHandle(), imageView, nullptr);
+	}
+	vkDestroySwapchainKHR(m_device->GetHandle(), m_handle, nullptr);
+
+	CreateSwapChain(VK_NULL_HANDLE);
+	CreateImageViews();
+	CreateFramebuffers();
 }
 
 const VkSurfaceFormatKHR Swapchain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
@@ -78,7 +92,7 @@ const VkExtent2D Swapchain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& cap
 	}
 }
 
-void Swapchain::CreateSwapChain()
+void Swapchain::CreateSwapChain(VkSwapchainKHR oldSwapchainHandle)
 {
 	Device::SwapChainSupportDetails swapChainSupport = m_device->QuerySwapChainSupport();
 
@@ -120,7 +134,7 @@ void Swapchain::CreateSwapChain()
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
-	createInfo.oldSwapchain = VK_NULL_HANDLE;
+	createInfo.oldSwapchain = oldSwapchainHandle;
 
 	if (vkCreateSwapchainKHR(m_device->GetHandle(), &createInfo, nullptr, &m_handle) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");

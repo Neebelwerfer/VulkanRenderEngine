@@ -51,11 +51,22 @@ void GraphicsManager::Cleanup()
 void GraphicsManager::Render() 
 {
 	vkWaitForFences(m_device->GetHandle(), 1, &m_inFlightFenceHandles[m_currentFrame], VK_TRUE, UINT64_MAX);
-	vkResetFences(m_device->GetHandle(), 1, &m_inFlightFenceHandles[m_currentFrame]);
+
+	if (m_window.IsMinimized())
+		return;
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(m_device->GetHandle(), m_swapchain->GetHandle(), UINT64_MAX, m_imageAvailableSemaphoreHandles[m_currentFrame], VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(m_device->GetHandle(), m_swapchain->GetHandle(), UINT64_MAX, m_imageAvailableSemaphoreHandles[m_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
+	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+		m_swapchain->Recreate();
+		return;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+		throw std::runtime_error("failed to acquire swap chain image!");
+	}
+
+	vkResetFences(m_device->GetHandle(), 1, &m_inFlightFenceHandles[m_currentFrame]);
 	vkResetCommandBuffer(m_commandBufferHandles[m_currentFrame], 0);
 	RecordCommandBuffer(m_commandBufferHandles[m_currentFrame], imageIndex);
 
@@ -89,10 +100,19 @@ void GraphicsManager::Render()
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
-	vkQueuePresentKHR(m_device->GetPresentQueueHandle(), &presentInfo);
+
+	result = vkQueuePresentKHR(m_device->GetPresentQueueHandle(), &presentInfo);
+
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_window.HaveResized()) {
+		m_window.ClearResizedFlag();
+		m_swapchain->Recreate();
+	}
+	else if (result != VK_SUCCESS) {
+		throw std::runtime_error("failed to present swap chain image!");
+	}
 	
 	m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-	m_surface->GetWindow().PollEvents();
 }
 
 std::shared_ptr<Device> GraphicsManager::GetDevice()
