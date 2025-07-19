@@ -11,11 +11,14 @@ public:
 	~Swapchain();
 
 	void Cleanup();
+	void Recreate();
 
-	inline const VkSwapchainKHR GetHandle() const { return m_swapChainHandle; }
-	inline const VkExtent2D GetExtent() const { return m_swapChainExtent; }
-	inline const VkFormat& GetImageFormat() const { return m_swapChainImageFormat; }
-	inline const std::vector<VkImageView>& GetImageViews() const { return m_swapChainImageViews; }
+	inline const VkSwapchainKHR GetHandle() const { return m_handle; }
+	inline const VkExtent2D GetExtent() const { return m_extent; }
+	inline const VkFormat GetImageFormat() const { return m_imageFormat; }
+	inline const std::vector<VkImageView>& GetImageViews() const { return m_imageViews; }
+	inline const VkRenderPass GetRenderPassHandle() const { return m_renderPassHandle; }
+	inline const std::vector<VkFramebuffer>& GetFramebuffers() const { return m_framebuffers; }
 
 private:
 	const VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
@@ -23,15 +26,20 @@ private:
 	const VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 	void CreateSwapChain();
 	void CreateImageViews();
+	void CreateRenderPass();
+	void CreateFramebuffers();
 
 private:
 
 	std::shared_ptr<Device> m_device;
 	std::shared_ptr<Surface> m_surface;
 
-	VkSwapchainKHR m_swapChainHandle;
-	VkExtent2D m_swapChainExtent;
-	VkFormat m_swapChainImageFormat;
-	std::vector<VkImage> m_swapChainImages;
-	std::vector<VkImageView> m_swapChainImageViews;
+	VkSwapchainKHR m_handle;
+	VkExtent2D m_extent;
+	VkFormat m_imageFormat;
+	VkRenderPass m_renderPassHandle;
+
+	std::vector<VkImage> m_images;
+	std::vector<VkImageView> m_imageViews;
+	std::vector<VkFramebuffer> m_framebuffers;
 };

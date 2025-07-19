@@ -4,12 +4,14 @@
 Swapchain::Swapchain(std::shared_ptr<Device> device, std::shared_ptr<Surface> surface)
 	: m_device(device)
 	, m_surface(surface)
-	, m_swapChainHandle(VK_NULL_HANDLE)
-	, m_swapChainExtent()
-	, m_swapChainImageFormat()
+	, m_handle(VK_NULL_HANDLE)
+	, m_extent()
+	, m_imageFormat()
 {
 	CreateSwapChain();
 	CreateImageViews();
+	CreateRenderPass();
+	CreateFramebuffers();
 }
 
 Swapchain::~Swapchain()
@@ -18,10 +20,19 @@ Swapchain::~Swapchain()
 
 void Swapchain::Cleanup() 
 {
-	for (auto imageView : m_swapChainImageViews) {
+	for (auto framebuffer : m_framebuffers) {
+		vkDestroyFramebuffer(m_device->GetHandle(), framebuffer, nullptr);
+	}
+	vkDestroyRenderPass(m_device->GetHandle(), m_renderPassHandle, nullptr);
+
+	for (auto imageView : m_imageViews) {
 		vkDestroyImageView(m_device->GetHandle(), imageView, nullptr);
 	}
-	vkDestroySwapchainKHR(m_device->GetHandle(), m_swapChainHandle, nullptr);
+	vkDestroySwapchainKHR(m_device->GetHandle(), m_handle, nullptr);
+}
+
+void Swapchain::Recreate()
+{
 }
 
 const VkSurfaceFormatKHR Swapchain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
@@ -111,30 +122,30 @@ void Swapchain::CreateSwapChain()
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-	if (vkCreateSwapchainKHR(m_device->GetHandle(), &createInfo, nullptr, &m_swapChainHandle) != VK_SUCCESS) {
+	if (vkCreateSwapchainKHR(m_device->GetHandle(), &createInfo, nullptr, &m_handle) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");
 	}
 
-	vkGetSwapchainImagesKHR(m_device->GetHandle(), m_swapChainHandle, &imageCount, nullptr);
-	m_swapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(m_device->GetHandle(), m_swapChainHandle, &imageCount, m_swapChainImages.data());
+	vkGetSwapchainImagesKHR(m_device->GetHandle(), m_handle, &imageCount, nullptr);
+	m_images.resize(imageCount);
+	vkGetSwapchainImagesKHR(m_device->GetHandle(), m_handle, &imageCount, m_images.data());
 
-	m_swapChainImageFormat = surfaceFormat.format;
-	m_swapChainExtent = extent;
+	m_imageFormat = surfaceFormat.format;
+	m_extent = extent;
 }
 
 void Swapchain::CreateImageViews()
 {
-	assert(m_swapChainImages.size() > 0);
+	assert(m_images.size() > 0);
 
-	m_swapChainImageViews.resize(m_swapChainImages.size());
-	for (size_t i = 0; i < m_swapChainImages.size(); i++) {
+	m_imageViews.resize(m_images.size());
+	for (size_t i = 0; i < m_images.size(); i++) {
 		VkImageViewCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		createInfo.image = m_swapChainImages[i];
+		createInfo.image = m_images[i];
 
 		createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		createInfo.format = m_swapChainImageFormat;
+		createInfo.format = m_imageFormat;
 		createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
 		createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
 		createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -146,8 +157,76 @@ void Swapchain::CreateImageViews()
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		if (vkCreateImageView(m_device->GetHandle(), &createInfo, nullptr, &m_swapChainImageViews[i]) != VK_SUCCESS) {
+		if (vkCreateImageView(m_device->GetHandle(), &createInfo, nullptr, &m_imageViews[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create image views!");
+		}
+	}
+}
+
+void Swapchain::CreateRenderPass()
+{
+	VkAttachmentDescription colorAttachment{};
+	colorAttachment.format = m_imageFormat;
+	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+	VkAttachmentReference colorAttachmentRef{};
+	colorAttachmentRef.attachment = 0;
+	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	VkSubpassDescription subpass{};
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.colorAttachmentCount = 1;
+	subpass.pColorAttachments = &colorAttachmentRef;
+
+	VkRenderPassCreateInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.attachmentCount = 1;
+	renderPassInfo.pAttachments = &colorAttachment;
+	renderPassInfo.subpassCount = 1;
+	renderPassInfo.pSubpasses = &subpass;
+
+	VkSubpassDependency dependency{};
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+	renderPassInfo.dependencyCount = 1;
+	renderPassInfo.pDependencies = &dependency;
+
+	if (vkCreateRenderPass(m_device->GetHandle(), &renderPassInfo, nullptr, &m_renderPassHandle) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create render pass!");
+	}
+}
+
+void Swapchain::CreateFramebuffers()
+{
+	m_framebuffers.resize(m_imageViews.size());
+
+	for (size_t i = 0; i < m_imageViews.size(); i++) {
+		VkImageView attachments[] = {
+			m_imageViews[i]
+		};
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = m_renderPassHandle;
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.width = m_extent.width;
+		framebufferInfo.height = m_extent.height;
+		framebufferInfo.layers = 1;
+
+		if (vkCreateFramebuffer(m_device->GetHandle(), &framebufferInfo, nullptr, &m_framebuffers[i]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create framebuffer!");
 		}
 	}
 }

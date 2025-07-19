@@ -15,7 +15,6 @@ GraphicsManager::GraphicsManager(IWindow& window)
 	, m_swapchain(nullptr)
 	, m_graphicsPipelineHandle(VK_NULL_HANDLE)
 	, m_pipelineLayoutHandle(VK_NULL_HANDLE)
-	, m_renderPassHandle(VK_NULL_HANDLE)
 	, m_commandPoolHandle(VK_NULL_HANDLE)
 	, m_window(window)
 {
@@ -40,12 +39,8 @@ void GraphicsManager::Cleanup()
 	}
 
 	vkDestroyCommandPool(m_device->GetHandle(), m_commandPoolHandle, nullptr);
-	for (auto framebuffer : m_swapChainFramebuffers) {
-		vkDestroyFramebuffer(m_device->GetHandle(), framebuffer, nullptr);
-	}
 	vkDestroyPipeline(m_device->GetHandle(), m_graphicsPipelineHandle, nullptr);
 	vkDestroyPipelineLayout(m_device->GetHandle(), m_pipelineLayoutHandle, nullptr);
-	vkDestroyRenderPass(m_device->GetHandle(), m_renderPassHandle, nullptr);
 	
 	m_swapchain->Cleanup();
 	m_device->Cleanup();
@@ -125,9 +120,7 @@ void GraphicsManager::Initialize(const char* title)
 	m_device = std::make_shared<Device>(m_instanceHandle, m_surface);
 	m_swapchain = std::make_unique<Swapchain>(m_device, m_surface);
 
-	CreatRenderPass();
 	SetupGraphicsPipeline();
-	CreateFramebuffers();
 	CreateCommandPool();
 	CreateCommandBuffer();
 	CreateSyncObjects();
@@ -226,50 +219,6 @@ void GraphicsManager::SetupDebugMessenger() {
 
 	if (CreateDebugUtilsMessengerEXT(m_instanceHandle, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
 		throw std::runtime_error("failed to set up debug messenger!");
-	}
-}
-
-void GraphicsManager::CreatRenderPass()
-{
-	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = m_swapchain->GetImageFormat();
-	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-	VkAttachmentReference colorAttachmentRef{};
-	colorAttachmentRef.attachment = 0;
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	VkSubpassDescription subpass{};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
-
-	VkRenderPassCreateInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = 1;
-	renderPassInfo.pAttachments = &colorAttachment;
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;
-
-	VkSubpassDependency dependency{};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.srcAccessMask = 0;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;
-
-	if (vkCreateRenderPass(m_device->GetHandle(), &renderPassInfo, nullptr, &m_renderPassHandle) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create render pass!");
 	}
 }
 
@@ -399,40 +348,13 @@ void GraphicsManager::SetupGraphicsPipeline()
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = &dynamicState;
 	pipelineInfo.layout = m_pipelineLayoutHandle;
-	pipelineInfo.renderPass = m_renderPassHandle;
+	pipelineInfo.renderPass = m_swapchain->GetRenderPassHandle();
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
 
 	if (vkCreateGraphicsPipelines(m_device->GetHandle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipelineHandle) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create graphics pipeline!");
-	}
-}
-
-void GraphicsManager::CreateFramebuffers()
-{
-	auto& swapchainImageViews = m_swapchain->GetImageViews();
-
-	m_swapChainFramebuffers.resize(swapchainImageViews.size());
-
-	for (size_t i = 0; i < swapchainImageViews.size(); i++) {
-		VkImageView attachments[] = {
-			swapchainImageViews[i]
-		};
-
-		VkExtent2D swapChainExtent = m_swapchain->GetExtent();
-		VkFramebufferCreateInfo framebufferInfo{};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = m_renderPassHandle;
-		framebufferInfo.attachmentCount = 1;
-		framebufferInfo.pAttachments = attachments;
-		framebufferInfo.width = swapChainExtent.width;
-		framebufferInfo.height = swapChainExtent.height;
-		framebufferInfo.layers = 1;
-
-		if (vkCreateFramebuffer(m_device->GetHandle(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create framebuffer!");
-		}
 	}
 }
 
@@ -452,7 +374,6 @@ void GraphicsManager::CreateCommandPool()
 
 void GraphicsManager::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
 
-	assert(m_swapChainFramebuffers.size() > 0 && m_swapChainFramebuffers.size() >= imageIndex + 1);
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = 0; // Optional
@@ -464,8 +385,8 @@ void GraphicsManager::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_
 
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = m_renderPassHandle;
-	renderPassInfo.framebuffer = m_swapChainFramebuffers[imageIndex];
+	renderPassInfo.renderPass = m_swapchain->GetRenderPassHandle();
+	renderPassInfo.framebuffer = m_swapchain->GetFramebuffers()[imageIndex];
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = m_swapchain->GetExtent();
 

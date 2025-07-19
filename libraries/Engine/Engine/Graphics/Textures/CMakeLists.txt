@@ -1,6 +1,8 @@
 set(TEXTURE_FILES
-    Texture.cpp
-    Texture.h
+    Texture2D.cpp
+    Texture2D.h
+    TextureCubemap.cpp
+    TextureCubemap.h
 )
 
 list(TRANSFORM TEXTURE_FILES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")

@@ -38,9 +38,7 @@ public:
 private:
 	void InitVulkan(const char* title);
 	void SetupDebugMessenger();
-	void CreatRenderPass();
 	void SetupGraphicsPipeline();
-	void CreateFramebuffers();
 	void CreateCommandPool();
 	void CreateCommandBuffer();
 	void CreateSyncObjects();
@@ -69,11 +67,9 @@ private:
 	std::unique_ptr<Swapchain> m_swapchain;
 
 	VkPipeline m_graphicsPipelineHandle;
-	VkRenderPass m_renderPassHandle;
 	VkPipelineLayout m_pipelineLayoutHandle;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
 
-	std::vector<VkFramebuffer> m_swapChainFramebuffers;
 	VkCommandPool m_commandPoolHandle;
 	std::vector<VkCommandBuffer> m_commandBufferHandles;
 
