@@ -2,7 +2,6 @@
 #include <iostream>
 #include <imgui.h>
 
-
 EditorApplication::EditorApplication()
 	: Application(800, 600, "Editor")
 {
@@ -15,7 +14,8 @@ EditorApplication::~EditorApplication()
 void EditorApplication::Initialize()
 {
 	Application::Initialize();
-	//m_imgui.Initialize(GetMainWindow());
+	m_imguiContext = m_graphicsManager->CreateImGuiContext();
+	m_imguiContext->Initialize();
 }
 
 void EditorApplication::Update() 
@@ -32,12 +32,12 @@ void EditorApplication::Render()
 void EditorApplication::Cleanup()
 {
 	Application::Cleanup();
-	//m_imgui.Cleanup();
+	m_imguiContext->Cleanup();
 }
 
 void EditorApplication::RenderGUI()
 {
-	//m_imgui.BeginFrame();
+	m_imguiContext->BeginFrame();
 
-	//m_imgui.EndFrame();
+	m_imguiContext->EndFrame();
 }

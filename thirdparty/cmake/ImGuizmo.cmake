@@ -1,4 +1,4 @@
-set(IMGUIZMO_DIR ${CMAKE_CURRENT_LIST_DIR}/../ImGuizmo)
+set(IMGUIZMO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo)
 
 add_library(ImGuizmo STATIC
     ${IMGUIZMO_DIR}/ImGuizmo.cpp

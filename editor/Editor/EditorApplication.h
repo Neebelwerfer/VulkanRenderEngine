@@ -1,5 +1,4 @@
 #include <Engine/Core/Application.h>
-#include <Engine/Utility/ImGuiManager.h>
 
 
 class EditorApplication : public Application
@@ -18,5 +17,5 @@ private:
 	void RenderGUI();
 
 private:
-	ImGuiManager m_imgui;
+	std::unique_ptr<ImGuiBase> m_imguiContext;
 };

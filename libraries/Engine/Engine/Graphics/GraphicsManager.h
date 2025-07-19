@@ -1,11 +1,12 @@
 #pragma once
 #include "Device/Device.h"
 #include "Device/Surface.h"
+#include "Base/ImGuiBase.h"
+#include "Swapchain.h"
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <vector>
 #include <vulkan/vulkan.h>
-#include "Swapchain.h"
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -30,6 +31,9 @@ public:
 	
 	std::shared_ptr<Device> GetDevice();
 	const std::shared_ptr<Device> GetDevice() const;
+
+
+	std::unique_ptr<ImGuiBase> CreateImGuiContext() const;
 
 private:
 	void InitVulkan(const char* title);

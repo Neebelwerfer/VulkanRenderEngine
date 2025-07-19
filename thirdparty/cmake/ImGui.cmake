@@ -1,4 +1,4 @@
-set(IMGUI_DIR ${CMAKE_CURRENT_LIST_DIR}/../imgui)
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 
 file(GLOB IMGUI_SRC
     "${IMGUI_DIR}/imgui.cpp"

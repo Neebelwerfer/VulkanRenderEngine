@@ -135,7 +135,6 @@ void Swapchain::CreateImageViews()
 
 		createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		createInfo.format = m_swapChainImageFormat;
-
 		createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
 		createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
 		createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;

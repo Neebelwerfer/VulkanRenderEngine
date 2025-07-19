@@ -2,8 +2,6 @@
 set(ENGINE_FILES 
      Core/Application.cpp
      Core/Application.h
-     Utility/ImGuiManager.cpp
-     Utility/ImGuiManager.h
 )
 
 # Prepend full path
@@ -22,7 +20,7 @@ target_include_directories(Engine PUBLIC
         ${PARENT_DIR}
 )
 
-target_link_libraries(Engine PUBLIC Vulkan::Vulkan glm stb glfw imgui tinyobjloader spdlog nlohmann_json )
+target_link_libraries(Engine PUBLIC Vulkan::Vulkan glm stb glfw imgui tinyobjloader spdlog nlohmann_json)
 set_target_properties(Engine PROPERTIES FOLDER "Libraries")
 target_precompile_headers(Engine PUBLIC ${PARENT_DIR}/pch.h)
 set_lib_output_dirs(Engine)

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include "Shaders/Shader.h"
+#include "Utility/VulkanImGuiContext.h"
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -107,6 +108,11 @@ std::shared_ptr<Device> GraphicsManager::GetDevice()
 const std::shared_ptr<Device> GraphicsManager::GetDevice() const
 {
 	return m_device;
+}
+
+std::unique_ptr<ImGuiBase> GraphicsManager::CreateImGuiContext() const
+{
+	return std::make_unique<VulkanImGuiContext>(m_window);
 }
 
 void GraphicsManager::Initialize(const char* title)

@@ -1,5 +1,5 @@
 
-set(libraries imgui Engine)
+set(libraries Engine)
 
 # Collect all .h/.cpp from Editor root and subfolders
 file(GLOB_RECURSE EDITOR_HEADERS CONFIGURE_DEPENDS
@@ -21,7 +21,7 @@ foreach(file ${EDITOR_FILES})
 endforeach()
 
 add_executable(Editor ${EDITOR_FILES})
-target_include_directories(Editor PUBLIC ${CMAKE_CURRENT_LIST_DIR}/Editor)
+target_include_directories(Editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(Editor PRIVATE ${libraries})
 # set_target_properties(Editor PROPERTIES FOLDER "Applications")
 set_app_output_dirs(Editor)
