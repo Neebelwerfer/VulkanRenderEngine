@@ -5,14 +5,14 @@ ImGuiBase::ImGuiBase(::IWindow& window)
 	: m_window(window)
 {
 	IMGUI_CHECKVERSION();
-	//ImGui::CreateContext();
+	ImGui::CreateContext();
 
-	//ImGui::StyleColorsDark();
+	ImGui::StyleColorsDark();
 }
 
 ImGuiBase::~ImGuiBase()
 {
-	//ImGui::DestroyContext();
+	ImGui::DestroyContext();
 }
 
 ImGuiBase::Window ImGuiBase::UseWindow(const char* name)

@@ -5,7 +5,6 @@ class VulkanImGuiContext : public ImGuiBase
 {
 public:
 	~VulkanImGuiContext();
-	VulkanImGuiContext(IWindow& window);
 
 	void Initialize() override;
 	void Cleanup() override;
@@ -15,4 +14,11 @@ public:
 
 private:
 	friend GraphicsManager;
+
+	void Render();
+
+	VulkanImGuiContext(IWindow& window);
+
+private:
+
 };

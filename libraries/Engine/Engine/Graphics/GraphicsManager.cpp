@@ -112,7 +112,8 @@ const std::shared_ptr<Device> GraphicsManager::GetDevice() const
 
 std::unique_ptr<ImGuiBase> GraphicsManager::CreateImGuiContext() const
 {
-	return std::make_unique<VulkanImGuiContext>(m_window);
+	ImGuiBase* context = new VulkanImGuiContext(m_window);
+	return std::unique_ptr<ImGuiBase>(context);
 }
 
 void GraphicsManager::Initialize(const char* title)
