@@ -42,6 +42,11 @@ float GLFWWindowImpl::GetAspectRatio() const
 	return static_cast<float>(width) / height;
 }
 
+const std::string& GLFWWindowImpl::GetWindowTitle() const
+{
+	return std::string(glfwGetWindowTitle(m_window));
+}
+
 void GLFWWindowImpl::Close() const
 {
 	glfwSetWindowShouldClose(m_window, GLFW_TRUE);
@@ -50,13 +55,6 @@ void GLFWWindowImpl::Close() const
 bool GLFWWindowImpl::ShouldClose() const
 {
 	return glfwWindowShouldClose(m_window);
-}
-
-bool GLFWWindowImpl::IsMinimized() const
-{
-	int width, height;
-	GetFramebufferSize(width, height);
-	return width == 0 || height == 0;
 }
 
 void GLFWWindowImpl::PollEvents() const

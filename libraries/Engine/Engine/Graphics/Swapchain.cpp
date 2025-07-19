@@ -1,7 +1,8 @@
 #include "Swapchain.h"
 #include <stdexcept>
+#include <glm/glm.hpp>
 
-Swapchain::Swapchain(std::shared_ptr<Device> device, std::shared_ptr<Surface> surface)
+Swapchain::Swapchain(Device& device, Surface& surface)
 	: m_device(device)
 	, m_surface(surface)
 	, m_handle(VK_NULL_HANDLE)
@@ -21,28 +22,28 @@ Swapchain::~Swapchain()
 void Swapchain::Cleanup() 
 {
 	for (auto framebuffer : m_framebuffers) {
-		vkDestroyFramebuffer(m_device->GetHandle(), framebuffer, nullptr);
+		vkDestroyFramebuffer(m_device.GetHandle(), framebuffer, nullptr);
 	}
-	vkDestroyRenderPass(m_device->GetHandle(), m_renderPassHandle, nullptr);
+	vkDestroyRenderPass(m_device.GetHandle(), m_renderPassHandle, nullptr);
 
 	for (auto imageView : m_imageViews) {
-		vkDestroyImageView(m_device->GetHandle(), imageView, nullptr);
+		vkDestroyImageView(m_device.GetHandle(), imageView, nullptr);
 	}
-	vkDestroySwapchainKHR(m_device->GetHandle(), m_handle, nullptr);
+	vkDestroySwapchainKHR(m_device.GetHandle(), m_handle, nullptr);
 }
 
 void Swapchain::Recreate()
 {
-	vkDeviceWaitIdle(m_device->GetHandle());
+	vkDeviceWaitIdle(m_device.GetHandle());
 
 	for (auto framebuffer : m_framebuffers) {
-		vkDestroyFramebuffer(m_device->GetHandle(), framebuffer, nullptr);
+		vkDestroyFramebuffer(m_device.GetHandle(), framebuffer, nullptr);
 	}
 
 	for (auto imageView : m_imageViews) {
-		vkDestroyImageView(m_device->GetHandle(), imageView, nullptr);
+		vkDestroyImageView(m_device.GetHandle(), imageView, nullptr);
 	}
-	vkDestroySwapchainKHR(m_device->GetHandle(), m_handle, nullptr);
+	vkDestroySwapchainKHR(m_device.GetHandle(), m_handle, nullptr);
 
 	CreateSwapChain(VK_NULL_HANDLE);
 	CreateImageViews();
@@ -78,7 +79,7 @@ const VkExtent2D Swapchain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& cap
 	}
 	else {
 		int width, height;
-		m_surface->GetWindow().GetFramebufferSize(width, height);
+		m_surface.GetWindow().GetFramebufferSize(width, height);
 
 		VkExtent2D actualExtent = {
 			static_cast<uint32_t>(width),
@@ -94,7 +95,7 @@ const VkExtent2D Swapchain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& cap
 
 void Swapchain::CreateSwapChain(VkSwapchainKHR oldSwapchainHandle)
 {
-	Device::SwapChainSupportDetails swapChainSupport = m_device->QuerySwapChainSupport();
+	Device::SwapChainSupportDetails swapChainSupport = m_device.QuerySwapChainSupport();
 
 	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
@@ -108,7 +109,7 @@ void Swapchain::CreateSwapChain(VkSwapchainKHR oldSwapchainHandle)
 
 	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = m_surface->GetHandle();
+	createInfo.surface = m_surface.GetHandle();
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -116,7 +117,7 @@ void Swapchain::CreateSwapChain(VkSwapchainKHR oldSwapchainHandle)
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	Device::QueueFamilyIndices indices = m_device->FindQueueFamilies();
+	Device::QueueFamilyIndices indices = m_device.FindQueueFamilies();
 	uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	if (indices.graphicsFamily != indices.presentFamily) {
@@ -136,13 +137,13 @@ void Swapchain::CreateSwapChain(VkSwapchainKHR oldSwapchainHandle)
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = oldSwapchainHandle;
 
-	if (vkCreateSwapchainKHR(m_device->GetHandle(), &createInfo, nullptr, &m_handle) != VK_SUCCESS) {
+	if (vkCreateSwapchainKHR(m_device.GetHandle(), &createInfo, nullptr, &m_handle) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");
 	}
 
-	vkGetSwapchainImagesKHR(m_device->GetHandle(), m_handle, &imageCount, nullptr);
+	vkGetSwapchainImagesKHR(m_device.GetHandle(), m_handle, &imageCount, nullptr);
 	m_images.resize(imageCount);
-	vkGetSwapchainImagesKHR(m_device->GetHandle(), m_handle, &imageCount, m_images.data());
+	vkGetSwapchainImagesKHR(m_device.GetHandle(), m_handle, &imageCount, m_images.data());
 
 	m_imageFormat = surfaceFormat.format;
 	m_extent = extent;
@@ -171,7 +172,7 @@ void Swapchain::CreateImageViews()
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		if (vkCreateImageView(m_device->GetHandle(), &createInfo, nullptr, &m_imageViews[i]) != VK_SUCCESS) {
+		if (vkCreateImageView(m_device.GetHandle(), &createInfo, nullptr, &m_imageViews[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create image views!");
 		}
 	}
@@ -216,7 +217,7 @@ void Swapchain::CreateRenderPass()
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;
 
-	if (vkCreateRenderPass(m_device->GetHandle(), &renderPassInfo, nullptr, &m_renderPassHandle) != VK_SUCCESS) {
+	if (vkCreateRenderPass(m_device.GetHandle(), &renderPassInfo, nullptr, &m_renderPassHandle) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create render pass!");
 	}
 }
@@ -239,7 +240,7 @@ void Swapchain::CreateFramebuffers()
 		framebufferInfo.height = m_extent.height;
 		framebufferInfo.layers = 1;
 
-		if (vkCreateFramebuffer(m_device->GetHandle(), &framebufferInfo, nullptr, &m_framebuffers[i]) != VK_SUCCESS) {
+		if (vkCreateFramebuffer(m_device.GetHandle(), &framebufferInfo, nullptr, &m_framebuffers[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create framebuffer!");
 		}
 	}

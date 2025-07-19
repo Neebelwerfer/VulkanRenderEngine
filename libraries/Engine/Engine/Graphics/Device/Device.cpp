@@ -9,7 +9,7 @@ const std::vector<const char*> deviceExtensions = {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-Device::Device(VkInstance instance, std::shared_ptr<Surface> surface)
+Device::Device(VkInstance instance, Surface& surface)
 	: m_physicalDeviceHandle(VK_NULL_HANDLE)
 	, m_deviceHandle(VK_NULL_HANDLE)
 	, m_graphicsQueueHandle(VK_NULL_HANDLE)
@@ -187,22 +187,22 @@ void Device::CreateLogicalDevice()
 Device::SwapChainSupportDetails Device::QuerySwapChainSupport(VkPhysicalDevice device) const
 {
 	SwapChainSupportDetails details;
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface->GetHandle(), &details.capabilities);
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface.GetHandle(), &details.capabilities);
 
 	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface->GetHandle(), &formatCount, nullptr);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface.GetHandle(), &formatCount, nullptr);
 
 	if (formatCount != 0) {
 		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface->GetHandle(), &formatCount, details.formats.data());
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface.GetHandle(), &formatCount, details.formats.data());
 	}
 
 	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface->GetHandle(), &presentModeCount, nullptr);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface.GetHandle(), &presentModeCount, nullptr);
 
 	if (presentModeCount != 0) {
 		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface->GetHandle(), &presentModeCount, details.presentModes.data());
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface.GetHandle(), &presentModeCount, details.presentModes.data());
 	}
 
 	return details;
@@ -225,7 +225,7 @@ Device::QueueFamilyIndices Device::FindQueueFamilies(VkPhysicalDevice device) co
 	int i = 0;
 	for (const auto& queueFamily : queueFamilies) {
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface->GetHandle(), &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface.GetHandle(), &presentSupport);
 
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			indices.graphicsFamily = i;

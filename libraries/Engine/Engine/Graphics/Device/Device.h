@@ -9,7 +9,7 @@
 class Device {
 
 public:
-	Device(VkInstance instance, std::shared_ptr<Surface> surface);
+	Device(VkInstance instance, Surface& surface);
 	~Device();
 
 	void Cleanup();
@@ -54,7 +54,7 @@ private:
 
 private:
 	VkInstance m_instanceHandle;
-	std::shared_ptr<Surface> m_surface;
+	Surface& m_surface;
 	VkPhysicalDevice m_physicalDeviceHandle;
 	VkDevice m_deviceHandle;
 	VkQueue m_graphicsQueueHandle;

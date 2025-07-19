@@ -12,6 +12,12 @@ Surface::Surface(VkInstance instance, IWindow& window)
 	if (nativeWindowHandle.type == NativeWindowHandleType::GLFW)
 	{
 		auto glfwWindow = static_cast<GLFWwindow*>(nativeWindowHandle.glfw.ptr);
+
+		if (glfwVulkanSupported() == GLFW_FALSE)
+		{
+			throw std::runtime_error("Vulkan not supported on this machine");
+		}
+
 		if (glfwCreateWindowSurface(instance, glfwWindow, nullptr, &m_surfaceHandle) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create window surface!");
 		}

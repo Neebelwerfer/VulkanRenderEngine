@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine/Graphics/Interfaces/IWindow.h>
+#include <string>
 
 class WindowBase : public IWindow
 {
@@ -11,6 +12,8 @@ public:
 	inline bool HaveResized() const override { return m_resized; }
 	inline void ClearResizedFlag() override { m_resized = false; }
 	inline void SetResizedFlag() override { m_resized = true; }
+
+	bool IsMinimized() const override;
 
 private:
 	bool m_resized;

@@ -21,7 +21,7 @@ static std::vector<char> readFile(const std::string& filename)
 	return buffer;
 }
 
-Shader::Shader(const std::shared_ptr<Device> device, const char* filename, ShaderTypes type)
+Shader::Shader(const Device& device, const char* filename, ShaderTypes type)
 	: m_device(device)
 	, m_type(type)
 {
@@ -32,7 +32,7 @@ Shader::Shader(const std::shared_ptr<Device> device, const char* filename, Shade
 
 Shader::~Shader()
 {
-	vkDestroyShaderModule(m_device->GetHandle(), m_shaderModule, nullptr);
+	vkDestroyShaderModule(m_device.GetHandle(), m_shaderModule, nullptr);
 }
 
 VkShaderModule Shader::CreateShaderModule(const std::vector<char>& code)
@@ -43,7 +43,7 @@ VkShaderModule Shader::CreateShaderModule(const std::vector<char>& code)
 	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
 	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(m_device->GetHandle(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+	if (vkCreateShaderModule(m_device.GetHandle(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create shader module!");
 	}
 	return shaderModule;

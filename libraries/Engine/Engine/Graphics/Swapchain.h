@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vulkan/vulkan.h>
 #include "Device/Device.h"
 #include <memory>
@@ -7,7 +9,7 @@
 class Swapchain
 {
 public:
-	Swapchain(std::shared_ptr<Device> Device, std::shared_ptr<Surface> surface);
+	Swapchain(Device& Device, Surface& surface);
 	~Swapchain();
 
 	void Cleanup();
@@ -31,8 +33,8 @@ private:
 
 private:
 
-	std::shared_ptr<Device> m_device;
-	std::shared_ptr<Surface> m_surface;
+	Device& m_device;
+	Surface& m_surface;
 
 	VkSwapchainKHR m_handle;
 	VkExtent2D m_extent;

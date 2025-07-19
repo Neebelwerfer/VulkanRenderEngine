@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 enum class NativeWindowHandleType {
 	Unknown,
@@ -29,6 +30,8 @@ public:
 	virtual bool IsValid() const = 0;
 	virtual bool HaveResized() const = 0;
 	virtual bool IsMinimized() const = 0;
+
+	virtual const std::string& GetWindowTitle() const = 0;
 
 	virtual void ClearResizedFlag() = 0;
 	virtual void SetResizedFlag() = 0;

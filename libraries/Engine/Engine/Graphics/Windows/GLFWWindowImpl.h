@@ -11,11 +11,13 @@ public:
 
 	inline bool IsValid() const { return m_window != nullptr; }
 	bool ShouldClose() const override;
-	bool IsMinimized() const override;
 
 	void GetFramebufferSize(int& width, int& height) const;
 	void GetDimensions(int& width, int& height) const;
 	float GetAspectRatio() const;
+
+	const std::string& GetWindowTitle() const override;
+
 	void PollEvents() const override;
 	void Close() const override;
 

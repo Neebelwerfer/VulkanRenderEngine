@@ -30,7 +30,7 @@ Application::~Application()
 
 void Application::Initialize()
 {
-	m_graphicsManager->Initialize("title");
+	m_graphicsManager->Initialize();
 }
 
 

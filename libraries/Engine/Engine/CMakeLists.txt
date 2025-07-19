@@ -22,5 +22,4 @@ target_include_directories(Engine PUBLIC
 
 target_link_libraries(Engine PUBLIC Vulkan::Vulkan glm stb glfw imgui tinyobjloader spdlog nlohmann_json)
 set_target_properties(Engine PROPERTIES FOLDER "Libraries")
-target_precompile_headers(Engine PUBLIC ${PARENT_DIR}/pch.h)
 set_lib_output_dirs(Engine)
