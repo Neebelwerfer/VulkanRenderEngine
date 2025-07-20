@@ -44,3 +44,19 @@ function(set_lib_output_dirs target_name)
         PDB_OUTPUT_DIRECTORY     "${output_root}"
     )
 endfunction()
+
+
+function(add_resources_to_target target_name)
+    set(SHADER_PATH "${PROJECT_SOURCE_DIR}/resources/shaders")
+    file(GLOB_RECURSE SHADERS CONFIGURE_DEPENDS 
+        "${SHADER_PATH}/*.vert" 
+        "${SHADER_PATH}/*.frag" 
+        "${SHADER_PATH}/*.geom" 
+        "${SHADER_PATH}/*.glsl" 
+        "${SHADER_PATH}/*.comp" 
+        "${SHADER_PATH}/.tesc" 
+        "${SHADER_PATH}/.tese")
+
+    source_group(TREE "${PROJECT_SOURCE_DIR}/resources" FILES ${SHADERS})
+    target_sources(${target_name} PRIVATE ${SHADERS})
+endfunction()
