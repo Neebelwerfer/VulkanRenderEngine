@@ -66,8 +66,8 @@ void GraphicsManager::Render()
 
 std::unique_ptr<ImGuiBase> GraphicsManager::CreateImGuiContext() const
 {
-	ImGuiBase* context = new VulkanImGuiContext(m_window);
-	return std::unique_ptr<ImGuiBase>(context);
+	VulkanImGuiContext context(m_window);
+	return std::unique_ptr<ImGuiBase>(&context);
 }
 
 void GraphicsManager::Initialize()
@@ -126,13 +126,14 @@ void GraphicsManager::InitVulkan()
 		throw std::runtime_error("validation layers requested, but not available!");
 	}
 
+	//TODO: get application name from the application
 	VkApplicationInfo appInfo{};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = "Render Engine";
 	appInfo.applicationVersion = VK_MAKE_API_VERSION(0, 1, 0, 0);
 	appInfo.pEngineName = "Vulkan Render Engine";
 	appInfo.engineVersion = VK_MAKE_API_VERSION(0, 0, 1, 0);
-	appInfo.apiVersion = VK_API_VERSION_1_0;
+	appInfo.apiVersion = VK_API_VERSION_1_3;
 
 	VkInstanceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -141,6 +142,7 @@ void GraphicsManager::InitVulkan()
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
 
+	//TODO: Move this?
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
 	auto extensions = GetRequiredExtensions();
@@ -185,6 +187,7 @@ void GraphicsManager::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCrea
 	createInfo.pfnUserCallback = debugCallback;
 }
 
+//TODO: Maybe look at severity here.
 VKAPI_ATTR VkBool32 VKAPI_CALL GraphicsManager::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
 	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;

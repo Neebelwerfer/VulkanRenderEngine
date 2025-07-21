@@ -3,6 +3,8 @@ set(RENDERER_FILES
 	Renderer.h
 	RenderPass.cpp
 	RenderPass.h
+	Framebuffer.cpp
+	Framebuffer.h
 )
 
 list(TRANSFORM RENDERER_FILES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")

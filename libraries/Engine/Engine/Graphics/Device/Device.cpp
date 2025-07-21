@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 const std::vector<const char*> deviceExtensions = {
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 };
 
 Device::Device(VkInstance instance, Surface& surface)
@@ -17,6 +17,7 @@ Device::Device(VkInstance instance, Surface& surface)
 	, m_surface(surface)
 	, m_instanceHandle(instance)
 {
+
 	PickPhysicalDevice(instance);
 	CreateLogicalDevice();
 
@@ -49,6 +50,7 @@ bool Device::IsDeviceSuitable(VkPhysicalDevice device) {
 	return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }
 
+// Query for the swapchain support on the selected physical device
 Device::SwapChainSupportDetails Device::QuerySwapChainSupport() const
 {
 	return QuerySwapChainSupport(m_physicalDeviceHandle);
@@ -157,9 +159,15 @@ void Device::CreateLogicalDevice()
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
+	VkPhysicalDeviceVulkan13Features vulkan13Features{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+		.dynamicRendering = VK_TRUE
+	};
+
 	VkPhysicalDeviceFeatures deviceFeatures{};
 	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	createInfo.pNext = &vulkan13Features;
 	createInfo.pQueueCreateInfos = &queueCreateInfo;
 	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
@@ -208,6 +216,7 @@ Device::SwapChainSupportDetails Device::QuerySwapChainSupport(VkPhysicalDevice d
 	return details;
 }
 
+// Find the queue families for the selected physical device
 Device::QueueFamilyIndices Device::FindQueueFamilies() const
 {
 	return FindQueueFamilies(m_physicalDeviceHandle);

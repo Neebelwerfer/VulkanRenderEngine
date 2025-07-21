@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "EditorApplication.h"
+
 int main()
 {
     EditorApplication app;

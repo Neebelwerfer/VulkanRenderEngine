@@ -57,6 +57,6 @@ function(add_resources_to_target target_name)
         "${SHADER_PATH}/.tesc" 
         "${SHADER_PATH}/.tese")
 
-    source_group(TREE "${PROJECT_SOURCE_DIR}/resources" FILES ${SHADERS})
+    source_group(TREE "${PROJECT_SOURCE_DIR}" FILES ${SHADERS})
     target_sources(${target_name} PRIVATE ${SHADERS})
 endfunction()

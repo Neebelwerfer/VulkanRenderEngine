@@ -54,6 +54,8 @@ void Renderer::Render()
 	}
 
 	vkResetFences(m_device.GetHandle(), 1, &m_inFlightFenceHandles[m_currentFrame]);
+
+
 	vkResetCommandBuffer(m_commandBufferHandles[m_currentFrame], 0);
 	RecordCommandBuffer(m_commandBufferHandles[m_currentFrame], imageIndex);
 
@@ -65,6 +67,7 @@ void Renderer::Render()
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
+
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &m_commandBufferHandles[m_currentFrame];
 
@@ -89,7 +92,6 @@ void Renderer::Render()
 	presentInfo.pResults = nullptr; // Optional
 
 	result = vkQueuePresentKHR(m_device.GetPresentQueueHandle(), &presentInfo);
-
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_window.HaveResized()) {
 		m_window.ClearResizedFlag();
@@ -236,6 +238,7 @@ void Renderer::SetupGraphicsPipeline()
 	if (vkCreateGraphicsPipelines(m_device.GetHandle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipelineHandle) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create graphics pipeline!");
 	}
+
 }
 
 void Renderer::CreateCommandPool()
