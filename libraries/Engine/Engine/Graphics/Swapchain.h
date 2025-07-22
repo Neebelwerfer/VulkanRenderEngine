@@ -4,6 +4,7 @@
 #include "Device/Device.h"
 #include <memory>
 #include <vector>
+#include "Renderer/Framebuffer.h"
 
 
 class Swapchain
@@ -44,4 +45,6 @@ private:
 	std::vector<VkImage> m_images;
 	std::vector<VkImageView> m_imageViews;
 	std::vector<VkFramebuffer> m_framebuffers;
+
+	std::vector<std::shared_ptr<Framebuffer>> m_defaultFramebuffers;
 };

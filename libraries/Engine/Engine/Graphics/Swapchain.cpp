@@ -225,11 +225,16 @@ void Swapchain::CreateRenderPass()
 void Swapchain::CreateFramebuffers()
 {
 	m_framebuffers.resize(m_imageViews.size());
+	m_defaultFramebuffers.resize(m_imageViews.size());
 
 	for (size_t i = 0; i < m_imageViews.size(); i++) {
 		VkImageView attachments[] = {
 			m_imageViews[i]
 		};
+
+		auto framebuffer = std::make_shared<Framebuffer>();
+		framebuffer->AttachTexture(m_imageViews[i], Framebuffer::AttachmentType::Color);
+		m_defaultFramebuffers[i] = framebuffer;
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

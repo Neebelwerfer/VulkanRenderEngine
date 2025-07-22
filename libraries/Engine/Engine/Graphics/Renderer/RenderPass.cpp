@@ -1,6 +1,6 @@
 #include "RenderPass.h"
 
-RenderPass::RenderPass()
+RenderPass::RenderPass(std::shared_ptr<const Framebuffer> framebuffer)
 {
 }
 

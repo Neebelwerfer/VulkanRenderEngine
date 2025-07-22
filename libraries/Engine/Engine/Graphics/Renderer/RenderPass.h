@@ -1,11 +1,12 @@
 #pragma once
 #include "Renderer.h"
+#include "Framebuffer.h"
 #include <vulkan/vulkan.h>
 
 class RenderPass 
 {
 public:
-	RenderPass();
+	RenderPass(std::shared_ptr<const Framebuffer> framebuffer);
 	~RenderPass();
 
 	const VkRenderPass GetHandle() const;
@@ -25,4 +26,6 @@ private:
 private:
 	Renderer* m_renderer;
 	VkRenderPass m_handle;
+
+	std::shared_ptr<const Framebuffer> m_targetBuffer;
 };

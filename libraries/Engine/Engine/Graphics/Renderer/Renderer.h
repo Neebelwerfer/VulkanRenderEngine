@@ -1,5 +1,6 @@
 #pragma once 
 
+#include "Framebuffer.h"
 #include <vulkan/vulkan.h>
 #include <Engine/Graphics/Swapchain.h>
 #include <Engine/Graphics/Device/Device.h>
@@ -12,6 +13,8 @@ public:
 
 	void Cleanup();
 	void Render();
+
+	std::shared_ptr<const Framebuffer> GetDefaultFramebuffer() const;
 
 private:
 	void SetupGraphicsPipeline();

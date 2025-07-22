@@ -104,6 +104,11 @@ void Renderer::Render()
 	m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+std::shared_ptr<const Framebuffer> Renderer::GetDefaultFramebuffer() const
+{
+	return std::shared_ptr<const Framebuffer>();
+}
+
 void Renderer::SetupGraphicsPipeline()
 {
 	auto vertShader = Shader(m_device, "./resources/shaders/vert.spv", Shader::Vertex);
